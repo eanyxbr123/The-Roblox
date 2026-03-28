@@ -1,5 +1,8 @@
-# Ignore temporary files
-*.tmp
-*.temp
-# Ignore local configs
-local_config.json
+# Project place file
+/The-Roblox.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+sourcemap.json

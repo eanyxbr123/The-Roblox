@@ -5,20 +5,20 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "projeto/src/shared"
+        "$path": "src/shared"
       }
     },
 
     "ServerScriptService": {
       "Server": {
-        "$path": "projeto/src/server"
+        "$path": "src/server"
       }
     },
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
-          "$path": "projeto/src/client"
+          "$path": "src/client"
         }
       }
     },
@@ -46,6 +46,31 @@
             512,
             20,
             512
+          ]
+        }
+      },
+      "SpawnLocation": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": true,
+          "Size": [
+            6,
+            1,
+            6
+          ],
+          "Position": [
+            0,
+            10,
+            0
+          ],
+          "TopSurface": "Smooth",
+          "BottomSurface": "Smooth",
+          "Duration": 0,
+          "Color": [
+            0.2,
+            0.7,
+            0.2
           ]
         }
       }
