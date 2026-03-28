@@ -1,0 +1,5 @@
+# Ignore temporary files
+*.tmp
+*.temp
+# Ignore local configs
+local_config.json
