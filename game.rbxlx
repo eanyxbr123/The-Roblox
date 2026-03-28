@@ -1,0 +1,4210 @@
+<roblox version="4">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <Color3 name="Ambient">
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+      </Color3>
+      <float name="Brightness">2</float>
+      <bool name="GlobalShadows">true</bool>
+      <bool name="Outlines">false</bool>
+      <token name="Technology">1</token>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="1">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+    <Item class="Folder" referent="2">
+      <Properties>
+        <string name="Name">Shared</string>
+      </Properties>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">CraftRecipes</string>
+          <string name="Source"><![CDATA[-- CraftRecipes.luau
+-- Sistema de receitas de craft
+
+export type Recipe = {
+	id: string,
+	name: string,
+	description: string,
+	output: {item: string, quantity: number},
+	inputs: {[string]: number}, -- {itemId: quantidade}
+	pattern: {{string?}}?, -- padrão visual 3x3 (opcional)
+	craftTime: number, -- segundos
+	category: string,
+	level: number -- nível mínimo de craft
+}
+
+local Recipes: {[string]: Recipe} = {
+	-- Ferramentas básicas
+	wooden_pickaxe = {
+		id = "wooden_pickaxe",
+		name = "Wooden Pickaxe",
+		description = "Basic mining tool",
+		output = {item = "wooden_pickaxe", quantity = 1},
+		inputs = {wood = 3, stone = 2},
+		pattern = {
+			{"wood", "wood", "wood"},
+			{nil, "stone", nil},
+			{nil, "stone", nil}
+		},
+		craftTime = 3,
+		category = "tools",
+		level = 1
+	},
+	stone_pickaxe = {
+		id = "stone_pickaxe",
+		name = "Stone Pickaxe",
+		description = "Better mining tool",
+		output = {item = "stone_pickaxe", quantity = 1},
+		inputs = {wood = 2, stone = 3},
+		pattern = {
+			{"stone", "stone", "stone"},
+			{nil, "wood", nil},
+			{nil, "wood", nil}
+		},
+		craftTime = 5,
+		category = "tools",
+		level = 1
+	},
+	metal_pickaxe = {
+		id = "metal_pickaxe",
+		name = "Metal Pickaxe",
+		description = "Advanced mining tool",
+		output = {item = "metal_pickaxe", quantity = 1},
+		inputs = {wood = 2, metal = 3},
+		pattern = {
+			{"metal", "metal", "metal"},
+			{nil, "wood", nil},
+			{nil, "wood", nil}
+		},
+		craftTime = 8,
+		category = "tools",
+		level = 3
+	},
+
+	-- Armaduras
+	cloth_armor = {
+		id = "cloth_armor",
+		name = "Cloth Armor",
+		description = "Basic protection",
+		output = {item = "cloth_armor", quantity = 1},
+		inputs = {cloth = 5},
+		pattern = {
+			{"cloth", nil, "cloth"},
+			{"cloth", "cloth", "cloth"},
+			{"cloth", nil, "cloth"}
+		},
+		craftTime = 4,
+		category = "armor",
+		level = 1
+	},
+	leather_armor = {
+		id = "leather_armor",
+		name = "Leather Armor",
+		description = "Better protection",
+		output = {item = "leather_armor", quantity = 1},
+		inputs = {leather = 4, cloth = 2},
+		pattern = {
+			{"leather", nil, "leather"},
+			{"cloth", "leather", "cloth"},
+			{"leather", nil, "leather"}
+		},
+		craftTime = 6,
+		category = "armor",
+		level = 2
+	},
+
+	-- Armas
+	wooden_spear = {
+		id = "wooden_spear",
+		name = "Wooden Spear",
+		description = "Basic melee weapon",
+		output = {item = "wooden_spear", quantity = 1},
+		inputs = {wood = 4, stone = 1},
+		pattern = {
+			nil, {"wood"}, nil,
+			nil, {"wood"}, nil,
+			nil, {"stone"}, nil
+		},
+		craftTime = 3,
+		category = "weapons",
+		level = 1
+	},
+	stone_spear = {
+		id = "stone_spear",
+		name = "Stone Spear",
+		description = "Better melee weapon",
+		output = {item = "stone_spear", quantity = 1},
+		inputs = {wood = 3, stone = 2},
+		pattern = {
+			nil, {"stone"}, nil,
+			nil, {"wood"}, nil,
+			nil, {"wood"}, nil
+		},
+		craftTime = 5,
+		category = "weapons",
+		level = 1
+	},
+	metal_sword = {
+		id = "metal_sword",
+		name = "Metal Sword",
+		description = "Powerful melee weapon",
+		output = {item = "metal_sword", quantity = 1},
+		inputs = {wood = 1, metal = 2},
+		pattern = {
+			nil, {"metal"}, nil,
+			nil, {"metal"}, nil,
+			nil, {"wood"}, nil
+		},
+		craftTime = 7,
+		category = "weapons",
+		level = 3
+	},
+
+	-- Materiais processados
+	planks = {
+		id = "planks",
+		name = "Wood Planks",
+		description = "Processed wood",
+		output = {item = "planks", quantity = 4},
+		inputs = {wood = 1},
+		pattern = {
+			{"wood"}
+		},
+		craftTime = 1,
+		category = "materials",
+		level = 1
+	},
+	sticks = {
+		id = "sticks",
+		name = "Sticks",
+		description = "Wooden sticks",
+		output = {item = "sticks", quantity = 4},
+		inputs = {planks = 2},
+		pattern = {
+			{"planks"},
+			{"planks"}
+		},
+		craftTime = 1,
+		category = "materials",
+		level = 1
+	}
+}
+
+return Recipes
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">Hello</string>
+          <string name="Source"><![CDATA[return function()
+	print("Hello, world!")
+end
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">Inventory</string>
+          <string name="Source"><![CDATA[-- Inventory.luau
+-- Sistema compartilhado de inventário
+
+export type InventorySlot = {
+	item: string?,
+	quantity: number,
+	durability: number?
+}
+
+export type InventoryData = {
+	slots: {[number]: InventorySlot},
+	columns: number,
+	rows: number,
+	maxSlots: number,
+	totalWeight: number,
+	maxWeight: number,
+	backpackLevel: number
+}
+
+local Inventory = {}
+
+-- Configurações de mochila por nível
+local BACKPACK_CONFIGS = {
+	[1] = {columns = 5, rows = 4, maxWeight = 50},   -- Mochila básica
+	[2] = {columns = 6, rows = 5, maxWeight = 75},   -- Mochila pequena
+	[3] = {columns = 7, rows = 6, maxWeight = 100},  -- Mochila média
+	[4] = {columns = 8, rows = 7, maxWeight = 150},  -- Mochila grande
+	[5] = {columns = 9, rows = 8, maxWeight = 250},  -- Mochila máxima
+}
+
+function Inventory.new(backpackLevel: number): InventoryData
+	local config = BACKPACK_CONFIGS[backpackLevel] or BACKPACK_CONFIGS[1]
+	local maxSlots = config.columns * config.rows
+
+	return {
+		slots = {},
+		columns = config.columns,
+		rows = config.rows,
+		maxSlots = maxSlots,
+		totalWeight = 0,
+		maxWeight = config.maxWeight,
+		backpackLevel = backpackLevel
+	}
+end
+
+function Inventory.upgradeBackpack(inv: InventoryData): boolean
+	if inv.backpackLevel >= 5 then
+		return false -- Já é nível máximo
+	end
+
+	inv.backpackLevel += 1
+	local config = BACKPACK_CONFIGS[inv.backpackLevel]
+	inv.columns = config.columns
+	inv.rows = config.rows
+	inv.maxSlots = config.columns * config.rows
+	inv.maxWeight = config.maxWeight
+
+	return true
+end
+
+function Inventory.addItem(inv: InventoryData, itemId: string, quantity: number, items: {[string]: any}): {success: boolean, remaining: number}
+	if not items[itemId] then
+		return {success = false, remaining = quantity}
+	end
+
+	local item = items[itemId]
+	local remaining = quantity
+
+	-- Calcular peso total que seria adicionado
+	local totalWeightToAdd = remaining * item.weight
+	if inv.totalWeight + totalWeightToAdd > inv.maxWeight then
+		-- Ajustar quantidade baseada no peso disponível
+		local availableWeight = inv.maxWeight - inv.totalWeight
+		local maxQuantity = math.floor(availableWeight / item.weight)
+		remaining = math.min(remaining, maxQuantity)
+		totalWeightToAdd = remaining * item.weight
+	end
+
+	if remaining <= 0 then
+		return {success = false, remaining = quantity}
+	end
+
+	-- Tentar adicionar a slots existentes
+	for slotNum = 1, inv.maxSlots do
+		if inv.slots[slotNum] and inv.slots[slotNum].item == itemId then
+			local canAdd = math.min(remaining, item.maxStack - inv.slots[slotNum].quantity)
+			inv.slots[slotNum].quantity += canAdd
+			remaining -= canAdd
+			inv.totalWeight += canAdd * item.weight
+
+			if remaining == 0 then
+				return {success = true, remaining = 0}
+			end
+		end
+	end
+
+	-- Adicionar a novos slots
+	for slotNum = 1, inv.maxSlots do
+		if not inv.slots[slotNum] then
+			local toAdd = math.min(remaining, item.maxStack)
+			inv.slots[slotNum] = {
+				item = itemId,
+				quantity = toAdd,
+				durability = item.properties and item.properties.durability or nil
+			}
+			remaining -= toAdd
+			inv.totalWeight += toAdd * item.weight
+
+			if remaining == 0 then
+				return {success = true, remaining = 0}
+			end
+		end
+	end
+
+	return {success = remaining < quantity, remaining = remaining}
+end
+
+function Inventory.removeItem(inv: InventoryData, itemId: string, quantity: number, items: {[string]: any}): boolean
+	local remaining = quantity
+
+	for slotNum = 1, inv.maxSlots do
+		if inv.slots[slotNum] and inv.slots[slotNum].item == itemId then
+			local toRemove = math.min(remaining, inv.slots[slotNum].quantity)
+			inv.slots[slotNum].quantity -= toRemove
+			remaining -= toRemove
+			inv.totalWeight -= toRemove * items[itemId].weight
+
+			if inv.slots[slotNum].quantity <= 0 then
+				inv.slots[slotNum] = nil
+			end
+
+			if remaining == 0 then
+				return true
+			end
+		end
+	end
+
+	return remaining == 0
+end
+
+function Inventory.hasItems(inv: InventoryData, items: {[string]: any}, recipe: any): boolean
+	for itemId, needed in pairs(recipe.inputs) do
+		local found = 0
+		for slotNum = 1, inv.maxSlots do
+			if inv.slots[slotNum] and inv.slots[slotNum].item == itemId then
+				found += inv.slots[slotNum].quantity
+			end
+		end
+		if found < needed then
+			return false
+		end
+	end
+	return true
+end
+
+function Inventory.getItemCount(inv: InventoryData, itemId: string): number
+	local count = 0
+	for slotNum = 1, inv.maxSlots do
+		if inv.slots[slotNum] and inv.slots[slotNum].item == itemId then
+			count += inv.slots[slotNum].quantity
+		end
+	end
+	return count
+end
+
+function Inventory.getSlotPosition(inv: InventoryData, slotNum: number): {row: number, col: number}
+	local row = math.floor((slotNum - 1) / inv.columns) + 1
+	local col = ((slotNum - 1) % inv.columns) + 1
+	return {row = row, col = col}
+end
+
+function Inventory.getSlotFromPosition(inv: InventoryData, row: number, col: number): number
+	return (row - 1) * inv.columns + col
+end
+
+return Inventory
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">ItemDefinitions</string>
+          <string name="Source"><![CDATA[-- ItemDefinitions.luau
+-- Sistema de definição de itens estilo Rust
+
+export type Item = {
+	id: string,
+	name: string,
+	description: string,
+	maxStack: number,
+	weight: number,
+	rarity: "common" | "uncommon" | "rare" | "epic" | "legendary",
+	icon: string,
+	properties: {[string]: any}?
+}
+
+local Items: {[string]: Item} = {
+	-- Recursos Básicos
+	wood = {
+		id = "wood",
+		name = "Wood",
+		description = "Basic wood resource",
+		maxStack = 1000,
+		weight = 0.5,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/wood"
+	},
+	stone = {
+		id = "stone",
+		name = "Stone",
+		description = "Basic stone resource",
+		maxStack = 1000,
+		weight = 1,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/stone"
+	},
+	metal = {
+		id = "metal",
+		name = "Metal Ore",
+		description = "Metal resource",
+		maxStack = 500,
+		weight = 1.5,
+		rarity = "uncommon",
+		icon = "rbxasset://textures/Ui/Icons/metal"
+	},
+	cloth = {
+		id = "cloth",
+		name = "Cloth",
+		description = "Fabric material",
+		maxStack = 500,
+		weight = 0.2,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/cloth"
+	},
+	mushroom = {
+		id = "mushroom",
+		name = "Mushroom",
+		description = "Edible mushroom",
+		maxStack = 100,
+		weight = 0.1,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/mushroom"
+	},
+	leather = {
+		id = "leather",
+		name = "Leather",
+		description = "Animal leather",
+		maxStack = 300,
+		weight = 0.3,
+		rarity = "uncommon",
+		icon = "rbxasset://textures/Ui/Icons/leather"
+	},
+
+	-- Ferramentas
+	stone_pickaxe = {
+		id = "stone_pickaxe",
+		name = "Stone Pickaxe",
+		description = "Basic mining tool",
+		maxStack = 1,
+		weight = 5,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/pickaxe",
+		properties = {
+			durability = 100,
+			miningSpeed = 1
+		}
+	},
+	metal_pickaxe = {
+		id = "metal_pickaxe",
+		name = "Metal Pickaxe",
+		description = "Better mining tool",
+		maxStack = 1,
+		weight = 4,
+		rarity = "uncommon",
+		icon = "rbxasset://textures/Ui/Icons/metal_pickaxe",
+		properties = {
+			durability = 200,
+			miningSpeed = 2
+		}
+	},
+	axe = {
+		id = "axe",
+		name = "Axe",
+		description = "Cutting tool",
+		maxStack = 1,
+		weight = 4,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/axe",
+		properties = {
+			durability = 100,
+			chopSpeed = 1
+		}
+	},
+
+	-- Armaduras
+	cloth_armor = {
+		id = "cloth_armor",
+		name = "Cloth Armor",
+		description = "Basic protection",
+		maxStack = 1,
+		weight = 2,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/cloth_armor",
+		properties = {
+			defense = 5
+		}
+	},
+	leather_armor = {
+		id = "leather_armor",
+		name = "Leather Armor",
+		description = "Better protection",
+		maxStack = 1,
+		weight = 3,
+		rarity = "uncommon",
+		icon = "rbxasset://textures/Ui/Icons/leather_armor",
+		properties = {
+			defense = 10
+		}
+	},
+
+	-- Armas
+	stone_spear = {
+		id = "stone_spear",
+		name = "Stone Spear",
+		description = "Basic melee weapon",
+		maxStack = 1,
+		weight = 3,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/spear",
+		properties = {
+			damage = 15,
+			durability = 50
+		}
+	},
+	metal_sword = {
+		id = "metal_sword",
+		name = "Metal Sword",
+		description = "Better melee weapon",
+		maxStack = 1,
+		weight = 2.5,
+		rarity = "uncommon",
+		icon = "rbxasset://textures/Ui/Icons/sword",
+		properties = {
+			damage = 30,
+			durability = 150
+		}
+	},
+
+	-- Materiais processados
+	planks = {
+		id = "planks",
+		name = "Wood Planks",
+		description = "Processed wood material",
+		maxStack = 1000,
+		weight = 0.3,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/planks"
+	},
+	sticks = {
+		id = "sticks",
+		name = "Sticks",
+		description = "Wooden sticks",
+		maxStack = 1000,
+		weight = 0.1,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/sticks"
+	},
+
+	-- Ferramentas adicionais
+	wooden_pickaxe = {
+		id = "wooden_pickaxe",
+		name = "Wooden Pickaxe",
+		description = "Basic wooden pickaxe",
+		maxStack = 1,
+		weight = 3,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/wooden_pickaxe",
+		properties = {
+			durability = 60,
+			miningSpeed = 0.8
+		}
+	},
+
+	-- Armas adicionais
+	wooden_spear = {
+		id = "wooden_spear",
+		name = "Wooden Spear",
+		description = "Basic wooden spear",
+		maxStack = 1,
+		weight = 2.5,
+		rarity = "common",
+		icon = "rbxasset://textures/Ui/Icons/wooden_spear",
+		properties = {
+			damage = 8,
+			durability = 30
+		}
+	}
+}
+
+return Items
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Folder" referent="7">
+        <Properties>
+          <string name="Name">Remotes</string>
+        </Properties>
+        <Item class="ModuleScript" referent="8">
+          <Properties>
+            <string name="Name">AddItem</string>
+            <string name="Source"><![CDATA[-- AddItem.luau
+-- RemoteFunction para adicionar itens
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local AddItemRemote = Instance.new("RemoteFunction")
+AddItemRemote.Name = "AddItem"
+AddItemRemote.Parent = script.Parent
+
+return AddItemRemote
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="9">
+          <Properties>
+            <string name="Name">BuildStructure</string>
+            <string name="Source">local BuildStructureRemote = Instance.new("RemoteFunction")
+BuildStructureRemote.Name = "BuildStructure"
+BuildStructureRemote.Parent = script.Parent
+
+return BuildStructureRemote</string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="10">
+          <Properties>
+            <string name="Name">CraftItem</string>
+            <string name="Source">-- CraftItem.luau
+-- RemoteFunction para craft de itens
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local CraftRemote = Instance.new("RemoteFunction")
+CraftRemote.Name = "CraftItem"
+CraftRemote.Parent = script.Parent
+
+return CraftRemote</string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="11">
+          <Properties>
+            <string name="Name">GetAvailableStructures</string>
+            <string name="Source">local GetAvailableStructuresRemote = Instance.new("RemoteFunction")
+GetAvailableStructuresRemote.Name = "GetAvailableStructures"
+GetAvailableStructuresRemote.Parent = script.Parent
+
+return GetAvailableStructuresRemote</string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="12">
+          <Properties>
+            <string name="Name">GetInventory</string>
+            <string name="Source">-- GetInventory.luau
+-- RemoteFunction para obter inventário
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local GetInventoryRemote = Instance.new("RemoteFunction")
+GetInventoryRemote.Name = "GetInventory"
+GetInventoryRemote.Parent = script.Parent
+
+return GetInventoryRemote</string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="13">
+          <Properties>
+            <string name="Name">RemoveItem</string>
+            <string name="Source">-- RemoveItem.luau
+-- RemoteFunction para remover itens
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local RemoveItemRemote = Instance.new("RemoteFunction")
+RemoveItemRemote.Name = "RemoveItem"
+RemoveItemRemote.Parent = script.Parent
+
+return RemoveItemRemote</string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="14">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Script" referent="15">
+      <Properties>
+        <string name="Name">Server</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- init.server.luau
+-- Inicialização do servidor
+
+print("🚀 Initializing Survival Game Server...")
+
+local ServerScriptService = game:GetService("ServerScriptService")
+local serverFolder = ServerScriptService:FindFirstChild("Server") or ServerScriptService
+
+local function findModuleByName(root, name)
+	if not root then return nil end
+	local lowerName = name:lower()
+	for _, descendant in ipairs(root:GetDescendants()) do
+		if (descendant:IsA("ModuleScript") or descendant:IsA("Script")) then
+			local descendantName = descendant.Name:lower()
+			if descendantName == lowerName or descendantName == lowerName .. ".server" or descendantName == lowerName .. ".server.luau" or descendantName:find(lowerName, 1, true) then
+				return descendant
+			end
+		end
+	end
+	return nil
+end
+
+local function findInServer(name)
+	local roots = {
+		serverFolder,
+		ServerScriptService,
+		game:GetService("ReplicatedStorage"),
+		game:GetService("ServerStorage"),
+	}
+	local candidatesNames = {
+		name,
+		name .. ".server",
+		name .. ".server.luau",
+		name .. ".luau",
+	}
+
+	print("[init] Searching module '", name, "' in service roots")
+	print("[init] serverFolder: ", serverFolder:GetFullName())
+
+	for _, root in ipairs(roots) do
+		if root then
+			print("[init] root = ", root:GetFullName())
+			for _, c in ipairs(candidatesNames) do
+				local inst = root:FindFirstChild(c)
+				if inst then
+					print("[init] candidate by exact name found: ", inst:GetFullName(), "(class=", inst.ClassName, ")")
+					if inst:IsA("ModuleScript") then
+						return inst
+					else
+						warn("[init] found Script named '"..c.."'; DayNightSystem/MonsterSystem/etc devem ser ModuleScript.")
+					end
+				end
+			end
+		end
+	end
+
+	local targetLower = name:lower()
+	for _, root in ipairs(roots) do
+		if root then
+			for _, descendant in ipairs(root:GetDescendants()) do
+				if descendant:IsA("ModuleScript") or descendant:IsA("Script") then
+					local descendantName = descendant.Name:lower()
+					if descendantName == targetLower
+						or descendantName == targetLower .. ".server"
+						or descendantName == targetLower .. ".server.luau"
+						or descendantName:find(targetLower, 1, true)
+					then
+						print("[init] candidate by recursive found: ", descendant:GetFullName(), " (class=", descendant.ClassName, ")")
+					if descendant:IsA("ModuleScript") then
+						return descendant
+					else
+						warn("[init] candidate is Script, not ModuleScript; ignore. Convert to ModuleScript for require() to work.")
+					end
+					end
+				end
+			end
+		end
+	end
+
+	-- Debug plus for troubleshooting
+	warn("[init] module not found: " .. tostring(name) .. ". listing all script/module names in Server folder and root...")
+	for _, root in ipairs({serverFolder, ServerScriptService}) do
+		if root then
+			for _, descendant in ipairs(root:GetDescendants()) do
+				if descendant:IsA("ModuleScript") or descendant:IsA("Script") then
+					print("[init] available candidate: ", descendant:GetFullName(), " (", descendant.Name, ")")
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+local function getModule(name)
+	local inst = findInServer(name)
+	if not inst then
+		warn("[init] module not found: " .. tostring(name) .. " in ServerScriptService (or Server subfolder)")
+		return nil
+	end
+	print("[init] loaded module: " .. name .. " from " .. inst:GetFullName())
+	return require(inst)
+end
+
+local function getItemSpawner()
+	return getModule("ItemSpawner")
+end
+
+local function getTreeSpawner()
+	return getModule("TreeSpawner")
+end
+
+local function getDayNightSystem()
+	return getModule("DayNightSystem")
+end
+
+local function getMonsterSystem()
+	return getModule("MonsterSystem")
+end
+
+local function getConstructionSystem()
+	return getModule("ConstructionSystem")
+end
+
+-- Inicializar sistemas na ordem correta
+local dayNightSystem = getDayNightSystem()
+if dayNightSystem then
+	dayNightSystem.init()
+end
+
+local monsterSystem = getMonsterSystem()
+if monsterSystem then
+	monsterSystem.init()
+end
+
+local itemSpawner = getItemSpawner()
+if itemSpawner then
+	itemSpawner.startAutoSpawn()
+end
+
+local treeSpawner = getTreeSpawner()
+if treeSpawner then
+	treeSpawner.startAutoSpawn()
+end
+
+local playerStats = getModule("PlayerStats")
+if playerStats then
+	playerStats.init()
+end
+
+local itemInteraction = getModule("ItemInteraction")
+if itemInteraction then
+	print("✅ Item Interaction system loaded")
+end
+
+-- Configurar remotes de construção
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local BuildStructureRemote = require(ReplicatedStorage.Shared.Remotes.BuildStructure)
+local GetAvailableStructuresRemote = require(ReplicatedStorage.Shared.Remotes.GetAvailableStructures)
+
+BuildStructureRemote.OnServerInvoke = function(player, structureId, position)
+	local constructionSystem = getConstructionSystem()
+	if not constructionSystem then
+		return false, "Construction system unavailable"
+	end
+	return constructionSystem.buildStructure(player, structureId, position)
+end
+
+GetAvailableStructuresRemote.OnServerInvoke = function(player)
+	local constructionSystem = getConstructionSystem()
+	if not constructionSystem then
+		return {}
+	end
+	return constructionSystem.getAvailableStructures(player)
+end
+
+print("✅ All systems initialized!")
+print("🌍 Survival game is ready!")
+print("📋 Features:")
+print("  - Item spawning system")
+print("  - Tree cutting with physics")
+print("  - Day/Night cycle with night counter")
+print("  - Monster spawning during night")
+print("  - Construction system with snap-to-grid")
+]]></string>
+      </Properties>
+      <Item class="Script" referent="16">
+        <Properties>
+          <string name="Name">ConstructionSystem</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- ConstructionSystem.server.luau
+-- Sistema de construção estilo The Forest
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ItemDefinitions = require(ReplicatedStorage.Shared.ItemDefinitions)
+
+local ConstructionSystem = {}
+
+local function getInventorySystem()
+	local service = game:GetService("ServerScriptService")
+	local inventorySystemModule = nil
+	if service:FindFirstChild("Server") and service.Server:FindFirstChild("InventorySystem") then
+		inventorySystemModule = service.Server.InventorySystem
+	elseif service:FindFirstChild("InventorySystem") then
+		inventorySystemModule = service.InventorySystem
+	end
+
+	if not inventorySystemModule then
+		warn("[ConstructionSystem] InventorySystem module not found")
+		return nil
+	end
+
+	return require(inventorySystemModule)
+end
+
+-- Configurações de construção
+local CONSTRUCTION_CONFIG = {
+	-- Culinária
+	cooking = {
+		{
+			id = "campfire",
+			name = "Campfire",
+			description = "Basic cooking fire",
+			requiredItems = {wood = 5, stone = 3},
+			model = "CampfireModel",
+			snapPoints = {},
+			category = "cooking"
+		},
+		{
+			id = "pot",
+			name = "Cooking Pot",
+			description = "Used with campfire for cooking",
+			requiredItems = {metal = 2, sticks = 4},
+			model = "PotModel",
+			snapPoints = {campfire = true},
+			category = "cooking"
+		},
+		{
+			id = "stove",
+			name = "Stove",
+			description = "Advanced cooking station",
+			requiredItems = {metal = 5, planks = 8, stone = 10},
+			model = "StoveModel",
+			snapPoints = {},
+			category = "cooking"
+		}
+	},
+
+	-- Defesa
+	defense = {
+		{
+			id = "wooden_spike_wall",
+			name = "Wooden Spike Wall",
+			description = "Defensive wall with spikes",
+			requiredItems = {wood = 8, sticks = 12},
+			model = "SpikeWallModel",
+			snapPoints = {wooden_spike_wall = true},
+			category = "defense"
+		},
+		{
+			id = "bear_trap",
+			name = "Bear Trap",
+			description = "Traps enemies",
+			requiredItems = {metal = 3, sticks = 6},
+			model = "BearTrapModel",
+			snapPoints = {},
+			category = "defense"
+		}
+	},
+
+	-- Geral
+	shelter = {
+		{
+			id = "wooden_wall",
+			name = "Wooden Wall",
+			description = "Basic wall",
+			requiredItems = {planks = 6, sticks = 4},
+			model = "WoodenWallModel",
+			snapPoints = {wooden_wall = true, wooden_door = true},
+			category = "shelter"
+		},
+		{
+			id = "wooden_door",
+			name = "Wooden Door",
+			description = "Door for shelter",
+			requiredItems = {planks = 8, sticks = 6},
+			model = "WoodenDoorModel",
+			snapPoints = {wooden_wall = true},
+			category = "shelter"
+		},
+		{
+			id = "wooden_floor",
+			name = "Wooden Floor",
+			description = "Floor for shelter",
+			requiredItems = {planks = 12, sticks = 8},
+			model = "WoodenFloorModel",
+			snapPoints = {wooden_wall = true, wooden_floor = true},
+			category = "shelter"
+		}
+	}
+}
+
+-- Estado do sistema
+local builtStructures = {}
+local structuresFolder = Instance.new("Folder")
+structuresFolder.Name = "BuiltStructures"
+structuresFolder.Parent = workspace
+
+-- Função para criar modelo de estrutura procedural (fallback)
+function ConstructionSystem.createProceduralStructure(structureId: string, config: table, position: CFrame)
+	local structureModel = Instance.new("Model")
+	structureModel.Name = config.name
+
+	-- Parte principal baseada no tipo
+	local mainPart
+	if structureId:find("wall") then
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(0.2, 4, 4)
+		mainPart.BrickColor = BrickColor.new("Brown")
+	elseif structureId:find("floor") then
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(4, 0.2, 4)
+		mainPart.BrickColor = BrickColor.new("Brown")
+	elseif structureId:find("campfire") then
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(2, 0.5, 2)
+		mainPart.BrickColor = BrickColor.new("Black")
+		-- Adicionar fogo
+		local fire = Instance.new("Fire")
+		fire.Size = 5
+		fire.Parent = mainPart
+	elseif structureId:find("pot") then
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(1, 0.5, 1)
+		mainPart.BrickColor = BrickColor.new("Dark stone grey")
+	elseif structureId:find("trap") then
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(2, 0.2, 2)
+		mainPart.BrickColor = BrickColor.new("Really black")
+	else
+		mainPart = Instance.new("Part")
+		mainPart.Size = Vector3.new(2, 2, 2)
+		mainPart.BrickColor = BrickColor.new("Brown")
+	end
+
+	mainPart.Anchored = true
+	mainPart.CanCollide = true
+	mainPart.Position = position.Position
+	mainPart.CFrame = position
+	mainPart.Parent = structureModel
+
+	-- Adicionar dados da estrutura
+	local idData = Instance.new("StringValue")
+	idData.Name = "StructureId"
+	idData.Value = structureId
+	idData.Parent = structureModel
+
+	local configData = Instance.new("StringValue")
+	configData.Name = "Config"
+	configData.Value = game:GetService("HttpService"):JSONEncode(config)
+	configData.Parent = structureModel
+
+	return structureModel
+end
+
+-- Função para verificar se jogador tem itens necessários
+function ConstructionSystem.hasRequiredItems(player: Player, requiredItems: table): boolean
+	local InventorySystem = getInventorySystem()
+	if not InventorySystem then return false end
+
+	for itemId, amount in pairs(requiredItems) do
+		local playerAmount = InventorySystem.getItemCount(player, itemId)
+		if playerAmount &lt; amount then
+			return false
+		end
+	end
+
+	return true
+end
+
+-- Função para remover itens do jogador
+function ConstructionSystem.removeRequiredItems(player: Player, requiredItems: table): boolean
+	local InventorySystem = getInventorySystem()
+	if not InventorySystem then return false end
+
+	for itemId, amount in pairs(requiredItems) do
+		if not InventorySystem.removeItem(player, itemId, amount) then
+			return false
+		end
+	end
+
+	return true
+end
+
+-- Função para encontrar ponto de snap próximo
+function ConstructionSystem.findSnapPoint(position: Vector3, structureId: string, config: table): CFrame?
+	-- Procurar estruturas próximas que podem fazer snap
+	for _, structure in pairs(builtStructures) do
+		if structure.Parent and structure:FindFirstChild("StructureId") then
+			local otherId = structure.StructureId.Value
+			local otherConfig = game:GetService("HttpService"):JSONDecode(structure.Config.Value)
+
+			-- Verificar se pode fazer snap
+			if config.snapPoints[otherId] or otherConfig.snapPoints[structureId] then
+				local distance = (structure:GetPivot().Position - position).Magnitude
+				if distance &lt; 6 then -- Raio de snap
+					-- Calcular posição de snap (simplificado)
+					local direction = (position - structure:GetPivot().Position).Unit
+					local snapPosition = structure:GetPivot().Position + direction * 4
+					return CFrame.new(snapPosition) * (structure:GetPivot().Rotation)
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+-- Função para construir estrutura
+function ConstructionSystem.buildStructure(player: Player, structureId: string, position)
+	-- Accept Vector3 or CFrame
+	if typeof(position) == "Vector3" then
+		position = CFrame.new(position)
+	elseif typeof(position) == "CFrame" then
+		-- nothing
+	else
+		warn("Invalid position type for buildStructure: " .. typeof(position))
+		return false
+	end
+
+	-- Encontrar configuração da estrutura
+	local config = nil
+	local category = nil
+
+	for catName, categoryItems in pairs(CONSTRUCTION_CONFIG) do
+		for _, item in pairs(categoryItems) do
+			if item.id == structureId then
+				config = item
+				category = catName
+				break
+			end
+		end
+		if config then break end
+	end
+
+	if not config then
+		print("❌ Structure config not found: " .. structureId)
+		return false
+	end
+
+	-- Verificar itens necessários
+	if not ConstructionSystem.hasRequiredItems(player, config.requiredItems) then
+		print("❌ Player doesn't have required items for " .. structureId)
+		return false
+	end
+
+	-- Aplicar snap se possível
+	local snapPosition = ConstructionSystem.findSnapPoint(position.Position, structureId, config)
+	if snapPosition then
+		position = snapPosition
+	end
+
+	-- Criar modelo da estrutura
+	local structureModel
+
+	-- Tentar usar modelo customizado se existir
+	local customModel = workspace:FindFirstChild(config.model)
+	if customModel and customModel:IsA("Model") then
+		structureModel = customModel:Clone()
+		structureModel:PivotTo(position)
+	else
+		-- Usar modelo procedural
+		structureModel = ConstructionSystem.createProceduralStructure(structureId, config, position)
+	end
+
+	if structureModel then
+		-- Remover itens do jogador
+		if not ConstructionSystem.removeRequiredItems(player, config.requiredItems) then
+			structureModel:Destroy()
+			return false
+		end
+
+		-- Adicionar à lista de estruturas construídas
+		table.insert(builtStructures, structureModel)
+
+		structureModel.Parent = structuresFolder
+
+		-- Sistema de interação (para estruturas especiais)
+		if structureId == "campfire" then
+			local interactScript = Instance.new("Script")
+			interactScript.Name = "CampfireLogic"
+			interactScript.Source = [[
+				local campfire = script.Parent
+				local fire = campfire:FindFirstChildWhichIsA("Fire")
+
+				-- Luz da fogueira
+				local light = Instance.new("PointLight")
+				light.Brightness = 0.5
+				light.Range = 15
+				light.Color = Color3.fromRGB(255, 150, 50)
+				light.Parent = campfire
+
+				-- Manter fogo aceso
+				while true do
+					if fire then
+						fire.Enabled = true
+					end
+					wait(1)
+				end
+			]]
+			interactScript.Parent = structureModel
+		end
+
+		print("🏗️ " .. player.Name .. " built " .. config.name .. " at " .. tostring(position.Position))
+		return true
+	end
+
+	return false
+end
+
+-- Função para destruir estrutura
+function ConstructionSystem.destroyStructure(player: Player, structureModel: Model): boolean
+	if not structureModel or not structureModel.Parent then return false end
+
+	-- Remover da lista
+	for i, structure in pairs(builtStructures) do
+		if structure == structureModel then
+			table.remove(builtStructures, i)
+			break
+		end
+	end
+
+	-- Dropar alguns materiais de volta
+	local config = game:GetService("HttpService"):JSONDecode(structureModel.Config.Value)
+	local itemSpawnerModule = nil
+	local service = game:GetService("ServerScriptService")
+	if service:FindFirstChild("Server") and service.Server:FindFirstChild("ItemSpawner") then
+		itemSpawnerModule = service.Server.ItemSpawner
+	elseif service:FindFirstChild("ItemSpawner") then
+		itemSpawnerModule = service.ItemSpawner
+	end
+
+	if not itemSpawnerModule then
+		warn("[ConstructionSystem] ItemSpawner module not found")
+		return false
+	end
+
+	local ItemSpawner = require(itemSpawnerModule)
+
+	for itemId, amount in pairs(config.requiredItems) do
+		local dropAmount = math.floor(amount * 0.5) -- 50% de retorno
+		if dropAmount &gt; 0 then
+			ItemSpawner.spawnItemAt(itemId, dropAmount, structureModel:GetPivot().Position)
+		end
+	end
+
+	structureModel:Destroy()
+	print("💥 " .. player.Name .. " destroyed a structure")
+	return true
+end
+
+-- Função para obter estruturas disponíveis para construção
+function ConstructionSystem.getAvailableStructures(player: Player): table
+	local available = {}
+
+	for categoryName, category in pairs(CONSTRUCTION_CONFIG) do
+		available[categoryName] = {}
+
+		for _, structure in pairs(category) do
+			local canBuild = ConstructionSystem.hasRequiredItems(player, structure.requiredItems)
+			local entry = table.clone(structure)
+			entry.canBuild = canBuild
+			table.insert(available[categoryName], entry)
+		end
+	end
+
+	return available
+end
+
+return ConstructionSystem</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="17">
+        <Properties>
+          <string name="Name">CreateInventoryGui</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- CreateInventoryGui.server.luau
+-- Criar GUI do inventário no StarterGui
+
+local StarterGui = game:GetService("StarterGui")
+
+-- Criar ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "InventoryGui"
+screenGui.ResetOnSpawn = false
+
+-- Criar InventoryWindow
+local inventoryWindow = Instance.new("Frame")
+inventoryWindow.Name = "InventoryWindow"
+inventoryWindow.Size = UDim2.new(0, 600, 0, 500)
+inventoryWindow.Position = UDim2.new(0.5, -300, 0.5, -250)
+inventoryWindow.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+inventoryWindow.BorderSizePixel = 0
+inventoryWindow.Visible = false
+inventoryWindow.Parent = screenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = inventoryWindow
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+titleLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "📦 INVENTORY"
+titleLabel.Parent = inventoryWindow
+
+-- Inventário em grid (lado esquerdo)
+local inventoryGrid = Instance.new("Frame")
+inventoryGrid.Name = "InventoryGrid"
+inventoryGrid.Size = UDim2.new(0.6, -10, 0.7, -50)
+inventoryGrid.Position = UDim2.new(0, 10, 0, 50)
+inventoryGrid.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+inventoryGrid.BorderSizePixel = 0
+inventoryGrid.Parent = inventoryWindow
+
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 50, 0, 50)
+gridLayout.CellPadding = UDim2.new(0, 2, 0, 2)
+gridLayout.FillDirection = Enum.FillDirection.Horizontal
+gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+gridLayout.Parent = inventoryGrid
+
+-- Criar slots do inventário (serão preenchidos dinamicamente)
+for i = 1, 45 do -- Máximo para level 5 (9x5)
+	local slot = Instance.new("Frame")
+	slot.Name = "Slot" .. i
+	slot.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	slot.BorderSizePixel = 1
+	slot.BorderColor3 = Color3.fromRGB(80, 80, 80)
+	slot.Parent = inventoryGrid
+
+	local slotCorner = Instance.new("UICorner")
+	slotCorner.CornerRadius = UDim.new(0, 4)
+	slotCorner.Parent = slot
+
+	local itemImage = Instance.new("ImageLabel")
+	itemImage.Name = "ItemImage"
+	itemImage.Size = UDim2.new(0.8, 0, 0.8, 0)
+	itemImage.Position = UDim2.new(0.1, 0, 0.1, 0)
+	itemImage.BackgroundTransparency = 1
+	itemImage.Visible = false
+	itemImage.Parent = slot
+
+	local quantityLabel = Instance.new("TextLabel")
+	quantityLabel.Name = "Quantity"
+	quantityLabel.Size = UDim2.new(0.3, 0, 0.3, 0)
+	quantityLabel.Position = UDim2.new(0.7, -2, 0.7, -2)
+	quantityLabel.BackgroundTransparency = 1
+	quantityLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	quantityLabel.TextSize = 10
+	quantityLabel.Font = Enum.Font.GothamBold
+	quantityLabel.TextXAlignment = Enum.TextXAlignment.Right
+	quantityLabel.Text = ""
+	quantityLabel.Parent = slot
+end
+
+-- Crafting area (lado direito)
+local craftingArea = Instance.new("Frame")
+craftingArea.Name = "CraftingArea"
+craftingArea.Size = UDim2.new(0.35, -10, 0.7, -50)
+craftingArea.Position = UDim2.new(0.65, 0, 0, 50)
+craftingArea.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+craftingArea.BorderSizePixel = 0
+craftingArea.Parent = inventoryWindow
+
+local craftingTitle = Instance.new("TextLabel")
+craftingTitle.Name = "CraftingTitle"
+craftingTitle.Size = UDim2.new(1, 0, 0, 25)
+craftingTitle.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+craftingTitle.TextColor3 = Color3.fromRGB(100, 200, 255)
+craftingTitle.TextSize = 14
+craftingTitle.Font = Enum.Font.GothamBold
+craftingTitle.Text = "🔨 CRAFTING"
+craftingTitle.Parent = craftingArea
+
+-- Crafting grid 3x3
+local craftingGrid = Instance.new("Frame")
+craftingGrid.Name = "CraftingGrid"
+craftingGrid.Size = UDim2.new(0.8, 0, 0.6, 0)
+craftingGrid.Position = UDim2.new(0.1, 0, 0.15, 0)
+craftingGrid.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+craftingGrid.BorderSizePixel = 0
+craftingGrid.Parent = craftingArea
+
+local craftGridLayout = Instance.new("UIGridLayout")
+craftGridLayout.CellSize = UDim2.new(0, 40, 0, 40)
+craftGridLayout.CellPadding = UDim2.new(0, 1, 0, 1)
+craftGridLayout.FillDirection = Enum.FillDirection.Horizontal
+craftGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+craftGridLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+craftGridLayout.Parent = craftingGrid
+
+-- Criar slots de crafting 3x3
+for row = 1, 3 do
+	for col = 1, 3 do
+		local craftSlot = Instance.new("Frame")
+		craftSlot.Name = "CraftSlot_" .. row .. "_" .. col
+		craftSlot.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+		craftSlot.BorderSizePixel = 1
+		craftSlot.BorderColor3 = Color3.fromRGB(80, 80, 80)
+		craftSlot.Parent = craftingGrid
+
+		local slotCorner = Instance.new("UICorner")
+		slotCorner.CornerRadius = UDim.new(0, 2)
+		slotCorner.Parent = craftSlot
+
+		local craftItemImage = Instance.new("ImageLabel")
+		craftItemImage.Name = "ItemImage"
+		craftItemImage.Size = UDim2.new(0.8, 0, 0.8, 0)
+		craftItemImage.Position = UDim2.new(0.1, 0, 0.1, 0)
+		craftItemImage.BackgroundTransparency = 1
+		craftItemImage.Visible = false
+		craftItemImage.Parent = craftSlot
+	end
+end
+
+-- Result slot
+local resultSlot = Instance.new("Frame")
+resultSlot.Name = "ResultSlot"
+resultSlot.Size = UDim2.new(0, 50, 0, 50)
+resultSlot.Position = UDim2.new(0.5, -25, 0.8, 0)
+resultSlot.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+resultSlot.BorderSizePixel = 2
+resultSlot.BorderColor3 = Color3.fromRGB(100, 150, 255)
+resultSlot.Parent = craftingArea
+
+local resultCorner = Instance.new("UICorner")
+resultCorner.CornerRadius = UDim.new(0, 4)
+resultCorner.Parent = resultSlot
+
+local resultImage = Instance.new("ImageLabel")
+resultImage.Name = "ResultImage"
+resultImage.Size = UDim2.new(0.8, 0, 0.8, 0)
+resultImage.Position = UDim2.new(0.1, 0, 0.1, 0)
+resultImage.BackgroundTransparency = 1
+resultImage.Visible = false
+resultImage.Parent = resultSlot
+
+local resultQuantity = Instance.new("TextLabel")
+resultQuantity.Name = "ResultQuantity"
+resultQuantity.Size = UDim2.new(0.3, 0, 0.3, 0)
+resultQuantity.Position = UDim2.new(0.7, -2, 0.7, -2)
+resultQuantity.BackgroundTransparency = 1
+resultQuantity.TextColor3 = Color3.fromRGB(255, 255, 255)
+resultQuantity.TextSize = 10
+resultQuantity.Font = Enum.Font.GothamBold
+resultQuantity.TextXAlignment = Enum.TextXAlignment.Right
+resultQuantity.Text = ""
+resultQuantity.Parent = resultSlot
+
+-- Craft button
+local craftButton = Instance.new("TextButton")
+craftButton.Name = "CraftButton"
+craftButton.Size = UDim2.new(0.8, 0, 0, 30)
+craftButton.Position = UDim2.new(0.1, 0, 0.9, 0)
+craftButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+craftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+craftButton.TextSize = 12
+craftButton.Font = Enum.Font.GothamBold
+craftButton.Text = "CRAFT"
+craftButton.Parent = craftingArea
+
+local craftCorner = Instance.new("UICorner")
+craftCorner.CornerRadius = UDim.new(0, 4)
+craftCorner.Parent = craftButton
+
+-- Parent no StarterGui
+screenGui.Parent = StarterGui
+
+print("✅ GUI do inventário criada no StarterGui com grid e crafting visual")</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="18">
+        <Properties>
+          <string name="Name">DayNightSystem</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- DayNightSystem.server.luau
+-- Sistema de contagem de dias e noites estilo 99 Nights
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local DayNightSystem = {}
+
+-- Configurações
+local TIME_CONFIG = {
+	dayLength = 600, -- segundos (10 minutos)
+	nightLength = 300, -- segundos (5 minutos)
+	dawnDuskLength = 60, -- segundos (1 minuto)
+	totalCycleLength = 960, -- segundos totais por ciclo
+
+	-- Eventos
+	onNightStart = Instance.new("BindableEvent"),
+	onDayStart = Instance.new("BindableEvent"),
+	onNightPassed = Instance.new("BindableEvent"),
+}
+
+-- Estado do sistema
+local currentTime = 0
+local isNight = false
+local nightCount = 0
+local dayCount = 1
+
+-- Valores remotos para sincronização com cliente
+local TimeValue = Instance.new("NumberValue")
+TimeValue.Name = "CurrentTime"
+TimeValue.Value = 0
+TimeValue.Parent = ReplicatedStorage
+
+local IsNightValue = Instance.new("BoolValue")
+IsNightValue.Name = "IsNight"
+IsNightValue.Value = false
+IsNightValue.Parent = ReplicatedStorage
+
+local NightCountValue = Instance.new("IntValue")
+NightCountValue.Name = "NightCount"
+NightCountValue.Value = 0
+NightCountValue.Parent = ReplicatedStorage
+
+local DayCountValue = Instance.new("IntValue")
+DayCountValue.Name = "DayCount"
+DayCountValue.Value = 1
+DayCountValue.Parent = ReplicatedStorage
+
+-- Função para calcular se é noite baseado no tempo
+local function calculateIsNight(time: number): boolean
+	local cycleTime = time % TIME_CONFIG.totalCycleLength
+	local dayTime = TIME_CONFIG.dayLength + TIME_CONFIG.dawnDuskLength
+
+	return cycleTime &gt;= dayTime
+end
+
+-- Função para atualizar iluminação baseada no tempo
+local function updateLighting(time: number)
+	local cycleTime = time % TIME_CONFIG.totalCycleLength
+	local lighting = game:GetService("Lighting")
+
+	if calculateIsNight(time) then
+		-- Noite
+		lighting.TimeOfDay = "00:00:00"
+		lighting.Brightness = 0.1
+		lighting.Ambient = Color3.fromRGB(50, 50, 80)
+		lighting.OutdoorAmbient = Color3.fromRGB(30, 30, 50)
+	else
+		-- Dia
+		local dayProgress = (cycleTime / TIME_CONFIG.dayLength)
+		local brightness = 0.5 + (dayProgress * 0.5) -- 0.5 a 1.0
+
+		lighting.TimeOfDay = "12:00:00"
+		lighting.Brightness = brightness
+		lighting.Ambient = Color3.fromRGB(150, 150, 200)
+		lighting.OutdoorAmbient = Color3.fromRGB(100, 100, 150)
+	end
+end
+
+-- Função principal do loop de tempo
+function DayNightSystem.startTimeLoop()
+	task.spawn(function()
+		while true do
+			currentTime = currentTime + 1
+			TimeValue.Value = currentTime
+
+			local wasNight = isNight
+			isNight = calculateIsNight(currentTime)
+
+			-- Verificar transição noite/dia
+			if isNight and not wasNight then
+				-- Início da noite
+				nightCount = nightCount + 1
+				NightCountValue.Value = nightCount
+				IsNightValue.Value = true
+
+				TIME_CONFIG.onNightStart:Fire(nightCount)
+
+				-- Mensagem para jogadores
+				for _, player in pairs(game.Players:GetPlayers()) do
+					local message = "🌙 Night " .. nightCount .. " has begun. Stay safe!"
+					if nightCount &lt;= 10 then
+						message = message .. " (Monsters fear light... for now)"
+					elseif nightCount == 11 then
+						message = "⚠️ The cannibals seem less afraid of light now. SURVIVE!"
+					end
+
+					-- Enviar notificação (implementar sistema de UI depois)
+					print("NOTIFICATION: " .. message)
+				end
+
+				print("🌙 Night " .. nightCount .. " started")
+
+			elseif not isNight and wasNight then
+				-- Início do dia
+				dayCount = dayCount + 1
+				DayCountValue.Value = dayCount
+				IsNightValue.Value = false
+
+				TIME_CONFIG.onDayStart:Fire(dayCount)
+
+				-- Mensagem para jogadores
+				for _, player in pairs(game.Players:GetPlayers()) do
+					local message = "☀️ Day " .. dayCount .. " has begun. Gather resources!"
+					print("NOTIFICATION: " .. message)
+				end
+
+				print("☀️ Day " .. dayCount .. " started")
+			end
+
+			-- Atualizar iluminação
+			updateLighting(currentTime)
+
+			wait(1) -- Atualizar a cada segundo
+		end
+	end)
+end
+
+-- Funções getter
+function DayNightSystem.getCurrentTime()
+	return currentTime
+end
+
+function DayNightSystem.getNightCount()
+	return nightCount
+end
+
+function DayNightSystem.getDayCount()
+	return dayCount
+end
+
+function DayNightSystem.isNight()
+	return isNight
+end
+
+-- Eventos
+function DayNightSystem.onNightStart(callback: (number) -&gt; ())
+	return TIME_CONFIG.onNightStart.Event:Connect(callback)
+end
+
+function DayNightSystem.onDayStart(callback: (number) -&gt; ())
+	return TIME_CONFIG.onDayStart.Event:Connect(callback)
+end
+
+function DayNightSystem.onNightPassed(callback: (number) -&gt; ())
+	return TIME_CONFIG.onNightPassed.Event:Connect(callback)
+end
+
+-- Inicialização
+function DayNightSystem.init()
+	DayNightSystem.startTimeLoop()
+	print("⏰ Day/Night system initialized")
+end
+
+return DayNightSystem</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="19">
+        <Properties>
+          <string name="Name">InventorySystem</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[-- InventorySystem.server.luau
+-- Sistema de inventário e craft no servidor
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local ItemDefinitions = require(ReplicatedStorage.Shared.ItemDefinitions)
+local CraftRecipes = require(ReplicatedStorage.Shared.CraftRecipes)
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
+
+-- Criar pasta Remotes se não existir
+local InventoryFolder = ReplicatedStorage:FindFirstChild("Remotes")
+if not InventoryFolder then
+	InventoryFolder = Instance.new("Folder")
+	InventoryFolder.Name = "Remotes"
+	InventoryFolder.Parent = ReplicatedStorage
+end
+
+-- Remotes
+local CraftRemote = Instance.new("RemoteFunction")
+CraftRemote.Name = "CraftItem"
+CraftRemote.Parent = InventoryFolder
+
+local AddItemRemote = Instance.new("RemoteFunction")
+AddItemRemote.Name = "AddItem"
+AddItemRemote.Parent = InventoryFolder
+
+local RemoveItemRemote = Instance.new("RemoteFunction")
+RemoveItemRemote.Name = "RemoveItem"
+RemoveItemRemote.Parent = InventoryFolder
+
+local GetInventoryRemote = Instance.new("RemoteFunction")
+GetInventoryRemote.Name = "GetInventory"
+GetInventoryRemote.Parent = InventoryFolder
+
+-- Armazenar inventários dos jogadores
+local playerInventories: {[Player]: any} = {}
+
+-- Inicializar inventário do jogador
+local function initPlayerInventory(player: Player)
+	if not playerInventories[player] then
+		playerInventories[player] = Inventory.new(30, 250) -- 30 slots, peso máximo 250
+		
+		-- Dar alguns itens iniciais
+		Inventory.addItem(playerInventories[player], "wood", 50, ItemDefinitions)
+		Inventory.addItem(playerInventories[player], "stone", 30, ItemDefinitions)
+	end
+end
+
+-- Craft de item
+CraftRemote.OnServerInvoke = function(player: Player, recipeId: string)
+	if not playerInventories[player] then
+		initPlayerInventory(player)
+	end
+
+	local recipe = CraftRecipes[recipeId]
+	if not recipe then
+		return {success = false, message = "Receita não encontrada"}
+	end
+
+	local inv = playerInventories[player]
+
+	-- Verificar se tem os itens necessários
+	if not Inventory.hasItems(inv, ItemDefinitions, recipe) then
+		return {success = false, message = "Itens insuficientes"}
+	end
+
+	-- Remover itens de entrada
+	for itemId, needed in pairs(recipe.inputs) do
+		Inventory.removeItem(inv, itemId, needed)
+	end
+
+	-- Adicionar item de saída
+	local outputSuccess = Inventory.addItem(inv, recipe.output.item, recipe.output.quantity, ItemDefinitions)
+
+	if not outputSuccess then
+		-- Se falhar em adicionar o output, devolver os inputs
+		for itemId, needed in pairs(recipe.inputs) do
+			Inventory.addItem(inv, itemId, needed, ItemDefinitions)
+		end
+		return {success = false, message = "Espaço insuficiente no inventário"}
+	end
+
+	print(player.Name .. " craftou " .. recipe.name)
+	return {success = true, message = "Item craftado com sucesso!", recipe = recipe}
+end
+
+-- Adicionar item (admin/system)
+AddItemRemote.OnServerInvoke = function(player: Player, itemId: string, quantity: number)
+	if not playerInventories[player] then
+		initPlayerInventory(player)
+	end
+
+	if not ItemDefinitions[itemId] then
+		return {success = false, message = "Item não encontrado"}
+	end
+
+	local success = Inventory.addItem(playerInventories[player], itemId, quantity, ItemDefinitions)
+	return {success = success, message = success and "Item adicionado" or "Espaço insuficiente"}
+end
+
+-- Remover item
+RemoveItemRemote.OnServerInvoke = function(player: Player, itemId: string, quantity: number)
+	if not playerInventories[player] then
+		return {success = false, message = "Inventário não inicializado"}
+	end
+
+	local success = Inventory.removeItem(playerInventories[player], itemId, quantity)
+	return {success = success, message = success and "Item removido" or "Item não encontrado"}
+end
+
+-- Obter inventário
+GetInventoryRemote.OnServerInvoke = function(player: Player)
+	if not playerInventories[player] then
+		initPlayerInventory(player)
+	end
+
+	return playerInventories[player]
+end
+
+-- Cleanup ao sair
+Players.PlayerRemoving:Connect(function(player: Player)
+	playerInventories[player] = nil
+end)
+
+-- Inicializar ao entrar
+Players.PlayerAdded:Connect(function(player: Player)
+	initPlayerInventory(player)
+end)
+
+print("✅ Inventory System carregado!")
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="20">
+        <Properties>
+          <string name="Name">ItemInteraction</string>
+          <string name="Source"><![CDATA[-- ItemInteraction.luau
+-- Sistema de interacao com itens (server-side validation e coleta)
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local ItemInteraction = {}
+
+-- Criar remotes para coleta de itens
+local function initializeRemotes()
+	local RemotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+	if not RemotesFolder then
+		RemotesFolder = Instance.new("Folder")
+		RemotesFolder.Name = "Remotes"
+		RemotesFolder.Parent = ReplicatedStorage
+	end
+
+	-- Remote para coletar item
+	local collectItemRemote = RemotesFolder:FindFirstChild("CollectItem")
+	if not collectItemRemote then
+		collectItemRemote = Instance.new("RemoteFunction")
+		collectItemRemote.Name = "CollectItem"
+		collectItemRemote.Parent = RemotesFolder
+
+		collectItemRemote.OnServerInvoke = function(player, itemPartName)
+			return ItemInteraction.handleItemCollection(player, itemPartName)
+		end
+	end
+
+	-- Event para notificar coleta bem sucedida
+	local itemCollectedEvent = RemotesFolder:FindFirstChild("ItemCollected")
+	if not itemCollectedEvent then
+		itemCollectedEvent = Instance.new("RemoteEvent")
+		itemCollectedEvent.Name = "ItemCollected"
+		itemCollectedEvent.Parent = RemotesFolder
+	end
+
+	print("✅ Item Interaction remotes initialized")
+end
+
+-- Manipular coleta de item
+function ItemInteraction.handleItemCollection(player: Player, itemPartName: string)
+	if not player or not player.Character then return false end
+
+	-- Encontrar item na pasta SpawnedItems
+	local spawnedItemsFolder = workspace:FindFirstChild("SpawnedItems")
+	if not spawnedItemsFolder then return false end
+
+	local itemPart = nil
+	for _, part in pairs(spawnedItemsFolder:GetChildren()) do
+		if part.Name == itemPartName then
+			itemPart = part
+			break
+		end
+	end
+
+	if not itemPart or not itemPart.Parent then
+		warn("Item part not found: " .. itemPartName)
+		return false
+	end
+
+	-- Verificar distancia
+	local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+	if not rootPart then return false end
+
+	local distance = (itemPart.Position - rootPart.Position).Magnitude
+	if distance > 35 then -- Maximo 35 studs de distancia
+		warn(player.Name .. " tentou coletar item muito distante (" .. distance .. " studs)")
+		return false
+	end
+
+	-- Obter dados do item
+	local itemId = itemPart:FindFirstChild("ItemId")
+	local amount = itemPart:FindFirstChild("Amount")
+
+	if not itemId or not amount then return false end
+
+	-- Notificar cliente para atualizar inventario
+	local RemotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+	local itemCollectedEvent = RemotesFolder and RemotesFolder:FindFirstChild("ItemCollected")
+	
+	if itemCollectedEvent then
+		itemCollectedEvent:FireClient(player, itemId.Value, amount.Value)
+	end
+
+	-- Recompensa de experiencia
+	local stats = player:FindFirstChild("Stats")
+	if stats then
+		local xpValue = stats:FindFirstChild("XP")
+		local levelValue = stats:FindFirstChild("Level")
+		if xpValue and levelValue then
+			xpValue.Value = xpValue.Value + amount.Value * 5
+			local needed = levelValue.Value * 100
+			if xpValue.Value >= needed then
+				levelValue.Value = levelValue.Value + 1
+				xpValue.Value = xpValue.Value - needed
+				print("🏆 " .. player.Name .. " reached level " .. levelValue.Value)
+			end
+		end
+	end
+
+	itemPart:Destroy()
+	print("👜 " .. player.Name .. " collected " .. amount.Value .. "x " .. itemId.Value)
+	return true
+end
+
+-- Inicializar na carregamento
+initializeRemotes()
+
+return ItemInteraction
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="21">
+        <Properties>
+          <string name="Name">ItemSpawner</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- ItemSpawner.server.luau
+-- Sistema de spawn de itens no chão estilo Rust/The Forest
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ItemDefinitions = require(ReplicatedStorage.Shared.ItemDefinitions)
+
+local ItemSpawner = {}
+
+-- Configurações de spawn
+local SPAWN_CONFIG = {
+	-- Itens que spawnam no chão
+	groundItems = {
+		{itemId = "wood", chance = 0.4, minAmount = 1, maxAmount = 3},
+		{itemId = "stone", chance = 0.3, minAmount = 1, maxAmount = 2},
+		{itemId = "cloth", chance = 0.2, minAmount = 1, maxAmount = 2},
+		{itemId = "mushroom", chance = 0.1, minAmount = 1, maxAmount = 1},
+	},
+
+	-- Configurações gerais
+	mapSpawnArea = {
+		center = Vector3.new(0, 0, 0),
+		radius = 100, -- Grande área do mapa (100 studs raio)
+	},
+	initialItemsToSpawn = 20, -- Itens spawnados no startup do mapa
+	maxItemsPerArea = 30, -- Máximo de itens por área
+	spawnInterval = 45, -- Segundos entre respawns
+	itemLifetime = 300, -- Segundos que o item fica no chão
+}
+
+-- Pasta para armazenar itens spawnados
+local SpawnedItemsFolder = Instance.new("Folder")
+SpawnedItemsFolder.Name = "SpawnedItems"
+SpawnedItemsFolder.Parent = workspace
+
+-- Função para spawnar item aleatório
+function ItemSpawner.spawnRandomItem(position: Vector3)
+	local itemConfig = SPAWN_CONFIG.groundItems[math.random(1, #SPAWN_CONFIG.groundItems)]
+
+	if math.random() &lt;= itemConfig.chance then
+		local itemDef = ItemDefinitions[itemConfig.itemId]
+		if itemDef then
+			local amount = math.random(itemConfig.minAmount, itemConfig.maxAmount)
+			ItemSpawner.spawnItemAt(itemConfig.itemId, amount, position)
+		end
+	end
+end
+
+-- Função para spawnar item específico em posição
+function ItemSpawner.spawnItemAt(itemId: string, amount: number, position: Vector3)
+	local itemDef = ItemDefinitions[itemId]
+	if not itemDef then return end
+
+	-- Criar parte física do item
+	local itemPart = Instance.new("Part")
+	itemPart.Name = itemId .. "_item"
+	itemPart.Size = Vector3.new(1, 0.2, 1)
+	itemPart.Position = position + Vector3.new(0, 0.1, 0)
+	itemPart.Anchored = false
+	itemPart.CanCollide = true
+
+	-- Adicionar física
+	local bodyVelocity = Instance.new("BodyVelocity")
+	bodyVelocity.Velocity = Vector3.new(math.random(-2, 2), 5, math.random(-2, 2))
+	bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+	bodyVelocity.Parent = itemPart
+
+	-- Remover física após um tempo
+	task.delay(0.5, function()
+		if bodyVelocity then bodyVelocity:Destroy() end
+	end)
+
+	-- Adicionar aparência baseada na raridade
+	local color = Color3.fromRGB(150, 150, 150) -- comum
+	if itemDef.rarity == "uncommon" then
+		color = Color3.fromRGB(100, 200, 100)
+	elseif itemDef.rarity == "rare" then
+		color = Color3.fromRGB(100, 150, 255)
+	elseif itemDef.rarity == "epic" then
+		color = Color3.fromRGB(200, 100, 255)
+	elseif itemDef.rarity == "legendary" then
+		color = Color3.fromRGB(255, 200, 100)
+	end
+
+	itemPart.Color = color
+
+	-- Adicionar brilho para itens raros
+	if itemDef.rarity ~= "common" then
+		local highlight = Instance.new("Highlight")
+		highlight.FillColor = color
+		highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+		highlight.FillTransparency = 0.3
+		highlight.Parent = itemPart
+	end
+
+	-- Adicionar texto flutuante
+	local billboard = Instance.new("BillboardGui")
+	billboard.Size = UDim2.new(0, 100, 0, 50)
+	billboard.StudsOffset = Vector3.new(0, 2, 0)
+	billboard.Parent = itemPart
+
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Size = UDim2.new(1, 0, 1, 0)
+	textLabel.BackgroundTransparency = 1
+	textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	textLabel.TextStrokeTransparency = 0
+	textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	textLabel.TextSize = 14
+	textLabel.Font = Enum.Font.GothamBold
+	textLabel.Text = itemDef.name .. (amount &gt; 1 and " x" .. amount or "")
+	textLabel.Parent = billboard
+
+	-- Adicionar dados do item
+	local itemData = Instance.new("StringValue")
+	itemData.Name = "ItemId"
+	itemData.Value = itemId
+	itemData.Parent = itemPart
+
+	local amountData = Instance.new("IntValue")
+	amountData.Name = "Amount"
+	amountData.Value = amount
+	amountData.Parent = itemPart
+
+	-- Adicionar ao workspace
+	itemPart.Parent = SpawnedItemsFolder
+	
+	-- Nota: A coleta de itens agora é feita pelo cliente usando arrasto
+	-- (veja ItemInteractionClient.client.luau)
+
+	-- Remover item após tempo de vida
+	task.delay(SPAWN_CONFIG.itemLifetime, function()
+		if itemPart and itemPart.Parent then
+			itemPart:Destroy()
+		end
+	end)
+
+	print("✅ Spawned " .. amount .. "x " .. itemId .. " at " .. tostring(position))
+end
+
+-- Sistema de spawn automático
+function ItemSpawner.startAutoSpawn()
+	-- Spawn inicial de itens no mapa
+	print("🌍 Spawning initial items on map...")
+	for i = 1, SPAWN_CONFIG.initialItemsToSpawn do
+		local angle = math.random() * math.pi * 2
+		local distance = math.random() * SPAWN_CONFIG.mapSpawnArea.radius
+		local offset = Vector3.new(math.cos(angle) * distance, 0, math.sin(angle) * distance)
+		local position = SPAWN_CONFIG.mapSpawnArea.center + offset
+		
+		-- Raycast para encontrar chão
+		local raycastParams = RaycastParams.new()
+		raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+		raycastParams.FilterDescendantsInstances = {SpawnedItemsFolder}
+		
+		local raycastResult = workspace:Raycast(position + Vector3.new(0, 50, 0), Vector3.new(0, -100, 0), raycastParams)
+		if raycastResult and raycastResult.Material ~= Enum.Material.Water then
+			ItemSpawner.spawnRandomItem(raycastResult.Position)
+		end
+	end
+	
+	-- Respawn periódico (mantém itens ativos)
+	task.spawn(function()
+		while true do
+			wait(SPAWN_CONFIG.spawnInterval)
+			
+			-- Contar itens ativos
+			local activeItems = #SpawnedItemsFolder:GetChildren()
+			
+			-- Se houver menos itens, spawnar mais
+			if activeItems &lt; SPAWN_CONFIG.initialItemsToSpawn * 0.5 then
+				local itemsToSpawn = math.ceil(SPAWN_CONFIG.initialItemsToSpawn * 0.3)
+				for i = 1, itemsToSpawn do
+					local angle = math.random() * math.pi * 2
+					local distance = math.random() * SPAWN_CONFIG.mapSpawnArea.radius
+					local offset = Vector3.new(math.cos(angle) * distance, 0, math.sin(angle) * distance)
+					local position = SPAWN_CONFIG.mapSpawnArea.center + offset
+					
+					local raycastParams = RaycastParams.new()
+					raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+					raycastParams.FilterDescendantsInstances = {SpawnedItemsFolder}
+					
+					local raycastResult = workspace:Raycast(position + Vector3.new(0, 50, 0), Vector3.new(0, -100, 0), raycastParams)
+					if raycastResult and raycastResult.Material ~= Enum.Material.Water then
+						ItemSpawner.spawnRandomItem(raycastResult.Position)
+					end
+				end
+			end
+		end
+	end)
+end
+
+-- Função para coletar item (chamada do cliente via remote)
+function ItemSpawner.collectItem(player: Player, itemPart: Part)
+	if not itemPart or not itemPart.Parent then return false end
+
+	local itemId = itemPart:FindFirstChild("ItemId")
+	local amount = itemPart:FindFirstChild("Amount")
+
+	if itemId and amount then
+		-- Usar remote para adicionar ao inventário
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local AddItemRemote = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("AddItem")
+		
+		if not AddItemRemote then
+			warn("AddItem remote not found")
+			return false
+		end
+
+		local success = pcall(function()
+			AddItemRemote:InvokeClient(player, itemId.Value, amount.Value)
+		end)
+		
+		if not success then
+			warn("Failed to call AddItem remote")
+			return false
+		end
+
+		if success then
+			-- Recompensa de experiência por coletar itens
+			local stats = player:FindFirstChild("Stats")
+			if stats then
+				local xpValue = stats:FindFirstChild("XP")
+				local levelValue = stats:FindFirstChild("Level")
+				if xpValue and levelValue then
+					xpValue.Value = xpValue.Value + amount.Value * 5
+					local needed = levelValue.Value * 100
+					if xpValue.Value &gt;= needed then
+						levelValue.Value = levelValue.Value + 1
+						xpValue.Value = xpValue.Value - needed
+						print("🏆 " .. player.Name .. " reached level " .. levelValue.Value)
+					end
+				end
+			end
+
+			itemPart:Destroy()
+			return true
+		end
+	end
+
+	return false
+end
+
+return ItemSpawner</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="22">
+        <Properties>
+          <string name="Name">MonsterSystem</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- MonsterSystem.server.luau
+-- Sistema de monstros/canibais estilo The Forest
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local MonsterSystem = {}
+
+-- Lazy load do DayNightSystem
+local function getDayNightSystem()
+	return require(game.ServerScriptService.Server.DayNightSystem)
+end
+
+-- Configurações de monstros
+local MONSTER_CONFIG = {
+	cannibal = {
+		name = "Cannibal",
+		health = 100,
+		damage = 25,
+		speed = 12,
+		detectionRange = 30,
+		attackRange = 3,
+		spawnChance = 0.6,
+		lightFearLevel = 1, -- 1-10, quanto maior menos medo de luz
+	},
+
+	mutant = {
+		name = "Mutant",
+		health = 150,
+		damage = 40,
+		speed = 16,
+		detectionRange = 40,
+		attackRange = 4,
+		spawnChance = 0.3,
+		lightFearLevel = 3,
+	},
+
+	virginia = {
+		name = "Virginia",
+		health = 300,
+		damage = 60,
+		speed = 20,
+		detectionRange = 50,
+		attackRange = 5,
+		spawnChance = 0.1,
+		lightFearLevel = 5,
+	}
+}
+
+-- Estado do sistema
+local activeMonsters = {}
+local monsterFolder = Instance.new("Folder")
+monsterFolder.Name = "Monsters"
+monsterFolder.Parent = workspace
+
+-- Função para criar modelo de monstro procedural
+function MonsterSystem.createMonsterModel(monsterType: string, config: table)
+	local monsterModel = Instance.new("Model")
+	monsterModel.Name = config.name
+
+	-- Corpo principal
+	local body = Instance.new("Part")
+	body.Name = "HumanoidRootPart"
+	body.Size = Vector3.new(2, 2, 1)
+	body.Anchored = false
+	body.CanCollide = true
+	body.BrickColor = BrickColor.new("Reddish brown")
+	body.Parent = monsterModel
+
+	-- Cabeça
+	local head = Instance.new("Part")
+	head.Name = "Head"
+	head.Size = Vector3.new(1, 1, 1)
+	head.Position = body.Position + Vector3.new(0, 1.5, 0)
+	head.Anchored = false
+	head.CanCollide = true
+	head.BrickColor = BrickColor.new("Light orange")
+	head.Parent = monsterModel
+
+	-- Adicionar Humanoid
+	local humanoid = Instance.new("Humanoid")
+	humanoid.MaxHealth = config.health
+	humanoid.Health = config.health
+	humanoid.WalkSpeed = config.speed
+	humanoid.Parent = monsterModel
+
+	-- Weld head to body
+	local neckWeld = Instance.new("Weld")
+	neckWeld.Part0 = body
+	neckWeld.Part1 = head
+	neckWeld.C0 = CFrame.new(0, 1, 0)
+	neckWeld.C1 = CFrame.new(0, -0.5, 0)
+	neckWeld.Parent = body
+
+	-- Adicionar dados do monstro
+	local typeData = Instance.new("StringValue")
+	typeData.Name = "MonsterType"
+	typeData.Value = monsterType
+	typeData.Parent = monsterModel
+
+	local configData = Instance.new("StringValue")
+	configData.Name = "Config"
+	configData.Value = game:GetService("HttpService"):JSONEncode(config)
+	configData.Parent = monsterModel
+
+	return monsterModel
+end
+
+-- Função para spawnar monstro
+function MonsterSystem.spawnMonster(monsterType: string, position: Vector3)
+	local config = MONSTER_CONFIG[monsterType]
+	if not config then return nil end
+
+	local monsterModel = MonsterSystem.createMonsterModel(monsterType, config)
+	monsterModel:MoveTo(position)
+
+	-- Adicionar à lista de monstros ativos
+	table.insert(activeMonsters, monsterModel)
+
+	-- Sistema de IA
+	local aiScript = Instance.new("Script")
+	aiScript.Name = "MonsterAI"
+	aiScript.Source = [[
+		local monster = script.Parent
+		local humanoid = monster:FindFirstChild("Humanoid")
+		local rootPart = monster:FindFirstChild("HumanoidRootPart")
+		local config = game:GetService("HttpService"):JSONDecode(monster.Config.Value)
+
+		local target = nil
+		local lastAttack = 0
+		local wanderDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1)).Unit
+
+		while humanoid and humanoid.Health &gt; 0 do
+			local isNight = getDayNightSystem().isNight()
+			local nightCount = getDayNightSystem().getNightCount()
+
+			if isNight then
+				-- Durante a noite, monstros são ativos
+				local nearestPlayer = nil
+				local nearestDistance = config.detectionRange
+
+				-- Procurar jogadores próximos
+				for _, player in pairs(game.Players:GetPlayers()) do
+					if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						local playerRoot = player.Character.HumanoidRootPart
+						local distance = (playerRoot.Position - rootPart.Position).Magnitude
+
+						if distance &lt; nearestDistance then
+							-- Verificar medo de luz
+							local lightFear = config.lightFearLevel
+							if nightCount &lt;= 10 then
+								lightFear = lightFear + (10 - nightCount) -- Mais medo nos primeiros dias
+							end
+
+							local isInLight = false
+							local lightLevel = game:GetService("Lighting").Brightness
+
+							-- Verificar se jogador está em área iluminada
+							if lightLevel &gt; 0.3 or player.Character:FindFirstChild("Torch") then
+								isInLight = true
+							end
+
+							if not isInLight or math.random() &gt; (lightFear / 10) then
+								nearestPlayer = player
+								nearestDistance = distance
+							end
+						end
+					end
+				end
+
+				if nearestPlayer then
+					target = nearestPlayer
+					local direction = (target.Character.HumanoidRootPart.Position - rootPart.Position).Unit
+					humanoid:MoveTo(rootPart.Position + direction * 5)
+
+					-- Ataque se estiver próximo
+					if nearestDistance &lt; config.attackRange and tick() - lastAttack &gt; 2 then
+						target.Character.Humanoid:TakeDamage(config.damage)
+						lastAttack = tick()
+
+						-- Som de ataque
+						local attackSound = Instance.new("Sound")
+						attackSound.SoundId = "rbxasset://sounds/sword_slash.wav"
+						attackSound.Volume = 0.7
+						attackSound.Parent = rootPart
+						attackSound:Play()
+						wait(1)
+						attackSound:Destroy()
+					end
+				else
+					-- Wander aleatoriamente
+					target = nil
+					if math.random() &lt; 0.02 then -- Mudar direção ocasionalmente
+						wanderDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1)).Unit
+					end
+					humanoid:MoveTo(rootPart.Position + wanderDirection * 10)
+				end
+			else
+				-- Durante o dia, monstros ficam parados ou fogem
+				humanoid:MoveTo(rootPart.Position)
+			end
+
+			wait(0.5)
+		end
+
+		-- Monstro morreu
+		require(game.ServerScriptService.Server.MonsterSystem).onMonsterDeath(monster)
+	]]
+	aiScript.Parent = monsterModel
+
+	monsterModel.Parent = monsterFolder
+
+	print("👹 Spawned " .. config.name .. " at " .. tostring(position))
+	return monsterModel
+end
+
+-- Função chamada quando monstro morre
+function MonsterSystem.onMonsterDeath(monster: Model)
+	-- Remover da lista de ativos
+	for i, activeMonster in pairs(activeMonsters) do
+		if activeMonster == monster then
+			table.remove(activeMonsters, i)
+			break
+		end
+	end
+
+	-- Dropar itens
+	local position = monster:GetPivot().Position
+	local ItemSpawner = require(game.ServerScriptService.Server.ItemSpawner)
+
+	-- Chance de dropar cloth ou outros itens
+	if math.random() &lt; 0.3 then
+		ItemSpawner.spawnItemAt("cloth", math.random(1, 3), position)
+	end
+
+	-- Destruir modelo após um tempo
+	task.delay(5, function()
+		if monster and monster.Parent then
+			monster:Destroy()
+		end
+	end)
+
+	print("💀 Monster died and dropped items")
+end
+
+-- Função para spawnar monstros em área
+function MonsterSystem.spawnMonstersInArea(center: Vector3, radius: number)
+	if not getDayNightSystem().isNight() then return end
+
+	local maxMonsters = 5
+	local spawned = 0
+
+	for i = 1, maxMonsters do
+		local angle = math.random() * math.pi * 2
+		local distance = math.random(20, radius)
+		local offset = Vector3.new(math.cos(angle) * distance, 0, math.sin(angle) * distance)
+		local position = center + offset
+
+		-- Verificar se posição é válida
+		local raycastResult = workspace:Raycast(position + Vector3.new(0, 10, 0), Vector3.new(0, -20, 0))
+		if raycastResult then
+			position = raycastResult.Position + Vector3.new(0, 2, 0)
+
+			-- Escolher tipo de monstro baseado na chance
+			local rand = math.random()
+			local monsterType = "cannibal"
+
+			if rand &lt; MONSTER_CONFIG.mutant.spawnChance then
+				monsterType = "mutant"
+			elseif rand &lt; MONSTER_CONFIG.mutant.spawnChance + MONSTER_CONFIG.virginia.spawnChance then
+				monsterType = "virginia"
+			end
+
+			if MonsterSystem.spawnMonster(monsterType, position) then
+				spawned += 1
+			end
+		end
+	end
+end
+
+-- Sistema de spawn automático durante a noite
+function MonsterSystem.startAutoSpawn()
+	getDayNightSystem().onNightStart(function(nightCount)
+		task.spawn(function()
+			while getDayNightSystem().isNight() do
+				-- Spawn monsters perto de jogadores
+				for _, player in pairs(game.Players:GetPlayers()) do
+					if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						local rootPart = player.Character.HumanoidRootPart
+						MonsterSystem.spawnMonstersInArea(rootPart.Position, 100)
+					end
+				end
+
+				wait(30) -- Spawn a cada 30 segundos durante a noite
+			end
+		end)
+	end)
+end
+
+-- Função para limpar monstros quando amanhece
+function MonsterSystem.clearMonstersOnDay()
+	getDayNightSystem().onDayStart(function(dayCount)
+		for _, monster in pairs(activeMonsters) do
+			if monster and monster.Parent then
+				monster:Destroy()
+			end
+		end
+		activeMonsters = {}
+		print("☀️ Cleared all monsters for day " .. dayCount)
+	end)
+end
+
+-- Inicialização
+function MonsterSystem.init()
+	MonsterSystem.startAutoSpawn()
+	MonsterSystem.clearMonstersOnDay()
+	print("👹 Monster system initialized")
+end
+
+return MonsterSystem</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="23">
+        <Properties>
+          <string name="Name">PlayerStats</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- PlayerStats.server.luau
+-- Gerencia estatísticas de sobrevivência ... vida, fome, sede, stamina, sanidade e nível.
+
+local Players = game:GetService("Players")
+
+local function createValue(parent, name, value)
+	local v = Instance.new("NumberValue")
+	v.Name = name
+	v.Value = value
+	v.Parent = parent
+	return v
+end
+
+local function initializePlayer(player)
+	local statsFolder = Instance.new("Folder")
+	statsFolder.Name = "Stats"
+	statsFolder.Parent = player
+
+	createValue(statsFolder, "Health", 100)
+	createValue(statsFolder, "Hunger", 100)
+	createValue(statsFolder, "Thirst", 100)
+	createValue(statsFolder, "Stamina", 100)
+	createValue(statsFolder, "Sanity", 100)
+	createValue(statsFolder, "Level", 1)
+	createValue(statsFolder, "XP", 0)
+
+	-- Metodo util para aplicar dano
+	player:GetAttributeChangedSignal("Health"):Connect(function()
+		-- talvez sincronização futura
+	end)
+end
+
+local function onPlayerAdded(player)
+	initializePlayer(player)
+
+	local hunger = player.Stats:WaitForChild("Hunger")
+	local thirst = player.Stats:WaitForChild("Thirst")
+	local health = player.Stats:WaitForChild("Health")
+	local stamina = player.Stats:WaitForChild("Stamina")
+	local sanity = player.Stats:WaitForChild("Sanity")
+
+	-- Cada 10s: if fome/sede &lt;=0 perde saúde
+	spawn(function()
+		while player.Parent do
+			wait(10)
+			if hunger.Value &gt; 0 then hunger.Value = math.max(0, hunger.Value - 2) end
+			if thirst.Value &gt; 0 then thirst.Value = math.max(0, thirst.Value - 3) end
+			if hunger.Value &lt;= 0 or thirst.Value &lt;= 0 then
+				health.Value = math.max(0, health.Value - 5)
+			end
+			if stamina.Value &lt; 100 then stamina.Value = math.min(100, stamina.Value + 1) end
+			if sanity.Value &gt; 0 then sanity.Value = math.max(0, sanity.Value - 1) end
+			if health.Value &lt;= 0 then
+				print("[PlayerStats] "..player.Name.." morreu de exaustão")
+				local character = player.Character
+				if character then
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					if humanoid then humanoid.Health = 0 end
+				end
+				break
+			end
+		end
+	end)
+end
+
+local function init()
+	Players.PlayerAdded:Connect(onPlayerAdded)
+	for _, player in ipairs(Players:GetPlayers()) do
+		onPlayerAdded(player)
+	end
+end
+
+return {
+	init = init,
+}</string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="24">
+        <Properties>
+          <string name="Name">TreeSpawner</string>
+          <token name="RunContext">0</token>
+          <string name="Source">-- TreeSpawner.server.luau
+-- Sistema de spawn de árvores estilo The Forest
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TreeSpawner = {}
+
+-- Lazy load do ItemSpawner (suporte ServerScriptService.Server ou raiz)
+local function getItemSpawner()
+	local service = game:GetService("ServerScriptService")
+	local itemSpawnerModule = nil
+	if service:FindFirstChild("Server") and service.Server:FindFirstChild("ItemSpawner") then
+		itemSpawnerModule = service.Server.ItemSpawner
+	elseif service:FindFirstChild("ItemSpawner") then
+		itemSpawnerModule = service.ItemSpawner
+	end
+
+	if not itemSpawnerModule then
+		error("ItemSpawner module not found")
+		return nil
+	end
+
+	return require(itemSpawnerModule)
+end
+
+-- Configurações de spawn de árvores
+local TREE_CONFIG = {
+	treeTypes = {
+		{
+			name = "OakTree",
+			modelName = "Arvore1",
+			height = 8,
+			radius = 3,
+			logsDrop = 3,
+			stickChance = 0.7,
+			health = 100,
+			respawnTime = 300 -- segundos
+		},
+		{
+			name = "PineTree",
+			modelName = "Arvore2",
+			height = 12,
+			radius = 2,
+			logsDrop = 4,
+			stickChance = 0.5,
+			health = 120,
+			respawnTime = 400
+		},
+		{
+			name = "BirchTree",
+			modelName = "Arvore3",
+			height = 6,
+			radius = 2,
+			logsDrop = 2,
+			stickChance = 0.8,
+			health = 80,
+			respawnTime = 250
+		}
+	},
+
+	spawnRadius = 100, -- Raio de spawn inicial
+	maxTreesPerArea = 15,
+	minDistanceBetweenTrees = 8,
+	spawnInterval = 60, -- Segundos entre verificações de spawn
+}
+
+-- Pasta para armazenar árvores
+local TreesFolder = Instance.new("Folder")
+TreesFolder.Name = "Trees"
+TreesFolder.Parent = workspace
+
+-- Armazenar posições de árvores existentes
+local treePositions = {}
+
+-- Função para criar modelo de árvore procedural (fallback)
+function TreeSpawner.createProceduralTree(treeType: table, position: Vector3)
+	local treeModel = Instance.new("Model")
+	treeModel.Name = treeType.name
+
+	-- Tronco
+	local trunk = Instance.new("Part")
+	trunk.Name = "Trunk"
+	trunk.Size = Vector3.new(treeType.radius * 0.5, treeType.height, treeType.radius * 0.5)
+	trunk.Position = position + Vector3.new(0, treeType.height/2, 0)
+	trunk.Anchored = true
+	trunk.CanCollide = true
+	trunk.BrickColor = BrickColor.new("Brown")
+	trunk.Material = Enum.Material.Wood
+	trunk.Parent = treeModel
+
+	-- Folhas (copa)
+	local leaves = Instance.new("Part")
+	leaves.Name = "Leaves"
+	leaves.Size = Vector3.new(treeType.radius * 2, treeType.radius * 1.5, treeType.radius * 2)
+	leaves.Position = position + Vector3.new(0, treeType.height + treeType.radius * 0.75, 0)
+	leaves.Anchored = true
+	leaves.CanCollide = false
+	leaves.BrickColor = BrickColor.new("Bright green")
+	leaves.Material = Enum.Material.Plastic
+	leaves.Shape = Enum.PartType.Ball
+	leaves.Parent = treeModel
+
+	-- Adicionar física ao tronco
+	local trunkWeld = Instance.new("WeldConstraint")
+	trunkWeld.Part0 = trunk
+	trunkWeld.Part1 = leaves
+	trunkWeld.Parent = trunk
+
+	return treeModel
+end
+
+-- Função para spawnar árvore
+function TreeSpawner.spawnTree(treeType: table, position: Vector3)
+	-- Verificar se já existe árvore próxima
+	for _, existingPos in pairs(treePositions) do
+		if (existingPos - position).Magnitude &lt; TREE_CONFIG.minDistanceBetweenTrees then
+			return nil
+		end
+	end
+
+	local treeModel
+
+	-- Tentar usar modelo customizado se existir
+	local customModel = workspace:FindFirstChild(treeType.modelName)
+	if customModel and customModel:IsA("Model") then
+		treeModel = customModel:Clone()
+		treeModel:MoveTo(position)
+	else
+		-- Usar modelo procedural
+		treeModel = TreeSpawner.createProceduralTree(treeType, position)
+	end
+
+	if treeModel then
+		-- Adicionar dados da árvore
+		local treeData = Instance.new("StringValue")
+		treeData.Name = "TreeType"
+		treeData.Value = treeType.name
+		treeData.Parent = treeModel
+
+		local healthData = Instance.new("IntValue")
+		healthData.Name = "Health"
+		healthData.Value = treeType.health
+		healthData.Parent = treeModel
+
+		local logsData = Instance.new("IntValue")
+		logsData.Name = "LogsDrop"
+		logsData.Value = treeType.logsDrop
+		logsData.Parent = treeModel
+
+		local stickChanceData = Instance.new("NumberValue")
+		stickChanceData.Name = "StickChance"
+		stickChanceData.Value = treeType.stickChance
+		stickChanceData.Parent = treeModel
+
+		-- Sistema de dano (será usado pelo sistema de combate)
+		local damageScript = Instance.new("Script")
+		damageScript.Name = "TreeDamageHandler"
+		damageScript.Source = [[
+			local tree = script.Parent
+			local health = tree.Health
+			local logsDrop = tree.LogsDrop
+			local stickChance = tree.StickChance
+
+			tree.Touched:Connect(function(hit)
+				local character = hit.Parent
+				local humanoid = character:FindFirstChild("Humanoid")
+				local player = game.Players:GetPlayerFromCharacter(character)
+
+				if humanoid and player and humanoid.Health &gt; 0 then
+					-- Verificar se está segurando uma ferramenta de mineração
+					local tool = character:FindFirstChildOfClass("Tool")
+					if tool and (tool.Name:find("axe") or tool.Name:find("pickaxe")) then
+						health.Value = health.Value - 10
+
+						if health.Value &lt;= 0 then
+							-- Árvore caiu
+						local path = game.ServerScriptService:FindFirstChild("Server") and game.ServerScriptService.Server:FindFirstChild("TreeSpawner") or game.ServerScriptService:FindFirstChild("TreeSpawner")
+						if path then
+							require(path).cutDownTree(tree, player)
+						else
+							warn("TreeSpawner module not found for cutDownTree")
+						end
+						else
+							-- Efeito de dano
+							local sound = Instance.new("Sound")
+							sound.SoundId = "rbxasset://sounds/wood_hit.wav"
+							sound.Volume = 0.5
+							sound.Parent = tree.Trunk
+							sound:Play()
+							wait(1)
+							sound:Destroy()
+						end
+					end
+				end
+			end)
+		]]
+		damageScript.Parent = treeModel
+
+		treeModel.Parent = TreesFolder
+		table.insert(treePositions, position)
+
+		print("🌳 Spawned " .. treeType.name .. " at " .. tostring(position))
+		return treeModel
+	end
+
+	return nil
+end
+
+-- Função para cortar árvore (chamada quando health &lt;= 0)
+function TreeSpawner.cutDownTree(treeModel: Model, player: Player)
+	if not treeModel or not treeModel.Parent then return end
+
+	local position = treeModel:GetPivot().Position
+	local logsDrop = treeModel.LogsDrop.Value
+	local stickChance = treeModel.StickChance.Value
+
+	-- Animação de queda
+	local trunk = treeModel:FindFirstChild("Trunk")
+	if trunk then
+		-- Tornar não ancorado para física
+		trunk.Anchored = false
+
+		-- Adicionar força para cair
+		local bodyVelocity = Instance.new("BodyVelocity")
+		bodyVelocity.Velocity = Vector3.new(math.random(-5, 5), 0, math.random(-5, 5))
+		bodyVelocity.MaxForce = Vector3.new(10000, 0, 10000)
+		bodyVelocity.Parent = trunk
+
+		-- Remover física após animação
+		task.delay(3, function()
+			if bodyVelocity then bodyVelocity:Destroy() end
+		end)
+
+		-- Som de árvore caindo
+		local fallSound = Instance.new("Sound")
+		fallSound.SoundId = "rbxasset://sounds/wood_break.wav"
+		fallSound.Volume = 1
+		fallSound.Parent = trunk
+		fallSound:Play()
+
+		task.delay(5, function()
+			if fallSound then fallSound:Destroy() end
+		end)
+	end
+
+	-- Dropar logs
+	for i = 1, logsDrop do
+		local dropPos = position + Vector3.new(math.random(-2, 2), 1, math.random(-2, 2))
+		getItemSpawner().spawnItemAt("wood", 1, dropPos)
+	end
+
+	-- Chance de dropar sticks
+	if math.random() &lt;= stickChance then
+		local dropPos = position + Vector3.new(math.random(-2, 2), 1, math.random(-2, 2))
+		getItemSpawner().spawnItemAt("sticks", math.random(1, 3), dropPos)
+	end
+
+	-- Remover árvore após animação
+	task.delay(5, function()
+		if treeModel and treeModel.Parent then
+			treeModel:Destroy()
+		end
+	end)
+
+	-- Agendar respawn
+	local treeType = treeModel.TreeType.Value
+	local respawnTime = 300 -- default
+	for _, config in pairs(TREE_CONFIG.treeTypes) do
+		if config.name == treeType then
+			respawnTime = config.respawnTime
+			break
+		end
+	end
+
+	task.delay(respawnTime, function()
+		-- Remover da lista de posições
+		for i, pos in pairs(treePositions) do
+			if pos == position then
+				table.remove(treePositions, i)
+				break
+			end
+		end
+
+		-- Respawn da árvore
+		local config = TREE_CONFIG.treeTypes[math.random(1, #TREE_CONFIG.treeTypes)]
+		TreeSpawner.spawnTree(config, position)
+	end)
+
+	print("🪓 " .. player.Name .. " cut down a " .. treeType .. " and got " .. logsDrop .. " logs")
+end
+
+-- Função para spawnar árvores em área
+function TreeSpawner.spawnTreesInArea(center: Vector3, radius: number)
+	local spawned = 0
+	local maxAttempts = 100
+
+	for i = 1, maxAttempts do
+		if spawned &gt;= TREE_CONFIG.maxTreesPerArea then break end
+
+		local angle = math.random() * math.pi * 2
+		local distance = math.random(10, radius)
+		local offset = Vector3.new(math.cos(angle) * distance, 0, math.sin(angle) * distance)
+		local position = center + offset
+
+		-- Verificar se posição é válida
+		local raycastParams = RaycastParams.new()
+		raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+		raycastParams.FilterDescendantsInstances = {TreesFolder}
+
+		local raycastResult = workspace:Raycast(position + Vector3.new(0, 50, 0), Vector3.new(0, -100, 0), raycastParams)
+
+		if raycastResult and raycastResult.Material ~= Enum.Material.Water then
+			local treeType = TREE_CONFIG.treeTypes[math.random(1, #TREE_CONFIG.treeTypes)]
+			if TreeSpawner.spawnTree(treeType, raycastResult.Position) then
+				spawned += 1
+			end
+		end
+	end
+end
+
+-- Sistema de spawn automático
+function TreeSpawner.startAutoSpawn()
+	print("🌱 TreeSpawner started; spawning every " .. TREE_CONFIG.spawnInterval .. " seconds")
+	task.spawn(function()
+		while true do
+			-- Spawn trees perto de jogadores
+			for _, player in pairs(game.Players:GetPlayers()) do
+				if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+					local rootPart = player.Character.HumanoidRootPart
+					TreeSpawner.spawnTreesInArea(rootPart.Position, TREE_CONFIG.spawnRadius)
+				end
+			end
+
+			wait(TREE_CONFIG.spawnInterval)
+		end
+	end)
+end
+
+return TreeSpawner</string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="SoundService" referent="25">
+    <Properties>
+      <string name="Name">SoundService</string>
+      <bool name="RespectFilteringEnabled">true</bool>
+    </Properties>
+  </Item>
+  <Item class="StarterPlayer" referent="26">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="27">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="LocalScript" referent="28">
+        <Properties>
+          <string name="Name">Client</string>
+          <string name="Source"><![CDATA[-- init.client.luau
+-- Inicialização do cliente
+
+print("🎮 Initializing Survival Game Client...")
+
+-- Os sistemas de UI de inventário, construção e intera\u00e7\u00e3o com itens rodam como LocalScripts em StarterPlayerScripts.
+-- N\u00e3o use require() em LocalScripts aqui.
+
+print("✅ Client systems loaded!")
+print("🎯 Controls:")
+print("  - I: Open inventory")
+print("  - B: Open construction menu")
+print("  - Hover near items and drag to collect (❌❌❌ NOVO SISTEMA)")
+]]></string>
+        </Properties>
+        <Item class="LocalScript" referent="29">
+          <Properties>
+            <string name="Name">ConstructionClient</string>
+            <string name="Source">-- ConstructionClient.client.luau
+-- Cliente do sistema de construção estilo The Forest
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+
+local BuildStructureRemote = require(ReplicatedStorage.Shared.Remotes.BuildStructure)
+local GetAvailableStructuresRemote = require(ReplicatedStorage.Shared.Remotes.GetAvailableStructures)
+local ItemDefinitions = require(ReplicatedStorage.Shared.ItemDefinitions)
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local function createPreviewModel(structure, cframe)
+	local model = Instance.new("Model")
+	model.Name = "ConstructionPreview"
+
+	local part = Instance.new("Part")
+	part.Size = structure.size or Vector3.new(4, 2, 4)
+	part.CFrame = cframe
+	part.Anchored = true
+	part.CanCollide = false
+	part.Transparency = 0.5
+	part.Color = structure.color or Color3.fromRGB(170, 170, 170)
+	part.Parent = model
+
+	local mesh = Instance.new("BlockMesh")
+	mesh.Parent = part
+
+	model.PrimaryPart = part
+	return model
+end
+
+local function snapToGrid(position, gridSize)
+	gridSize = gridSize or 4
+	return Vector3.new(
+		math.round(position.X / gridSize) * gridSize,
+		math.round(position.Y / gridSize) * gridSize,
+		math.round(position.Z / gridSize) * gridSize
+	)
+end
+
+-- Criar GUI do menu radial
+local radialMenu = Instance.new("ScreenGui")
+radialMenu.Name = "ConstructionRadialMenu"
+radialMenu.ResetOnSpawn = false
+radialMenu.Enabled = false
+radialMenu.Parent = playerGui
+
+-- Background escuro
+local background = Instance.new("Frame")
+background.Name = "Background"
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+background.BackgroundTransparency = 0.7
+background.Parent = radialMenu
+
+-- Container do menu radial
+local radialContainer = Instance.new("Frame")
+radialContainer.Name = "RadialContainer"
+radialContainer.Size = UDim2.new(0, 400, 0, 400)
+radialContainer.Position = UDim2.new(0.5, -200, 0.5, -200)
+radialContainer.BackgroundTransparency = 1
+radialContainer.Parent = radialMenu
+
+-- Centro do menu
+local centerButton = Instance.new("TextButton")
+centerButton.Name = "CenterButton"
+centerButton.Size = UDim2.new(0, 80, 0, 80)
+centerButton.Position = UDim2.new(0.5, -40, 0.5, -40)
+centerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+centerButton.Text = "🏗️"
+centerButton.TextSize = 24
+centerButton.Parent = radialContainer
+
+local centerCorner = Instance.new("UICorner")
+centerCorner.CornerRadius = UDim.new(1, 0)
+centerCorner.Parent = centerButton
+
+-- Botões das categorias
+local categories = {
+	{name = "Culinária", key = "cooking", icon = "🍳", color = Color3.fromRGB(255, 150, 50)},
+	{name = "Defesa", key = "defense", icon = "🛡️", color = Color3.fromRGB(150, 50, 50)},
+	{name = "Abrigo", key = "shelter", icon = "🏠", color = Color3.fromRGB(100, 150, 255)},
+}
+
+local categoryButtons = {}
+
+for i, category in ipairs(categories) do
+	local angle = (i - 1) * (360 / #categories) - 90 -- Começar do topo
+	local radian = math.rad(angle)
+	local distance = 120
+
+	local button = Instance.new("TextButton")
+	button.Name = category.name .. "Button"
+	button.Size = UDim2.new(0, 60, 0, 60)
+	button.Position = UDim2.new(0.5, math.cos(radian) * distance - 30, 0.5, math.sin(radian) * distance - 30)
+	button.BackgroundColor3 = category.color
+	button.Text = category.icon
+	button.TextSize = 20
+	button.Parent = radialContainer
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(1, 0)
+	corner.Parent = button
+
+	categoryButtons[category.name] = button
+end
+
+-- Menu de itens de construção (inicialmente invisível)
+local itemMenu = Instance.new("Frame")
+itemMenu.Name = "ItemMenu"
+itemMenu.Size = UDim2.new(0, 300, 0, 400)
+itemMenu.Position = UDim2.new(0.5, 250, 0.5, -200)
+itemMenu.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+itemMenu.BorderSizePixel = 2
+itemMenu.Visible = false
+itemMenu.Parent = radialMenu
+
+local itemCorner = Instance.new("UICorner")
+itemCorner.CornerRadius = UDim.new(0, 8)
+itemCorner.Parent = itemMenu
+
+local itemScroll = Instance.new("ScrollingFrame")
+itemScroll.Name = "ItemScroll"
+itemScroll.Size = UDim2.new(1, -20, 1, -60)
+itemScroll.Position = UDim2.new(0, 10, 0, 50)
+itemScroll.BackgroundTransparency = 1
+itemScroll.ScrollBarThickness = 6
+itemScroll.Parent = itemMenu
+
+local itemListLayout = Instance.new("UIListLayout")
+itemListLayout.Padding = UDim.new(0, 5)
+itemListLayout.Parent = itemScroll
+
+local itemTitle = Instance.new("TextLabel")
+itemTitle.Name = "Title"
+itemTitle.Size = UDim2.new(1, 0, 0, 40)
+itemTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+itemTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+itemTitle.TextSize = 16
+itemTitle.Font = Enum.Font.GothamBold
+itemTitle.Text = "Selecione Item"
+itemTitle.Parent = itemMenu
+
+-- Estado do sistema
+local isMenuOpen = false
+local selectedCategory = nil
+local selectedStructure = nil
+local previewModel = nil
+
+-- Função para abrir/fechar menu radial
+local function toggleRadialMenu()
+	isMenuOpen = not isMenuOpen
+	radialMenu.Enabled = isMenuOpen
+
+	if not isMenuOpen then
+		itemMenu.Visible = false
+		selectedCategory = nil
+		selectedStructure = nil
+		if previewModel then
+			previewModel:Destroy()
+			previewModel = nil
+		end
+	end
+end
+
+-- Função para mostrar itens de uma categoria
+local function showCategoryItems(categoryName, categoryKey)
+	selectedCategory = categoryKey
+	itemTitle.Text = categoryName
+
+	-- Limpar itens anteriores
+	for _, child in pairs(itemScroll:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+
+	-- Obter estruturas disponíveis do servidor
+	local availableStructures = GetAvailableStructuresRemote:InvokeServer()
+
+	if availableStructures and availableStructures[categoryKey] then
+		for _, structure in pairs(availableStructures[categoryKey]) do
+			local itemButton = Instance.new("TextButton")
+			itemButton.Name = structure.id
+			itemButton.Size = UDim2.new(1, 0, 0, 50)
+			itemButton.BackgroundColor3 = structure.canBuild and Color3.fromRGB(60, 60, 60) or Color3.fromRGB(80, 80, 80)
+			itemButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+			itemButton.TextSize = 14
+			itemButton.Font = Enum.Font.Gotham
+			itemButton.Text = structure.name .. (structure.canBuild and "" or " (recursos insuficientes)")
+			itemButton.AutoButtonColor = structure.canBuild
+			itemButton.Parent = itemScroll
+
+			local buttonCorner = Instance.new("UICorner")
+			buttonCorner.CornerRadius = UDim.new(0, 4)
+			buttonCorner.Parent = itemButton
+
+			-- Hover effect
+			itemButton.MouseEnter:Connect(function()
+				if structure.canBuild then
+					itemButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+				end
+			end)
+
+			itemButton.MouseLeave:Connect(function()
+				if structure.canBuild then
+					itemButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+				end
+			end)
+
+			-- Selecionar item
+			itemButton.MouseButton1Click:Connect(function()
+				if not structure.canBuild then
+					print("❌ Recursos insuficientes para " .. structure.name)
+					return
+				end
+
+				selectedStructure = structure
+				itemMenu.Visible = false
+				radialMenu.Enabled = false
+				startPlacementMode(structure)
+			end)
+		end
+	else
+		local noItemsLabel = Instance.new("TextLabel")
+		noItemsLabel.Size = UDim2.new(1, 0, 0, 30)
+		noItemsLabel.BackgroundTransparency = 1
+		noItemsLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+		noItemsLabel.TextSize = 12
+		noItemsLabel.Text = "Nenhum item disponível"
+		noItemsLabel.Parent = itemScroll
+	end
+
+	itemMenu.Visible = true
+end
+
+-- Modo de colocação
+function startPlacementMode(structure)
+	print("🏗️ Placement mode: " .. structure.name)
+
+	-- Criar preview
+	local character = player.Character
+	if character and character:FindFirstChild("HumanoidRootPart") then
+		local rootPart = character.HumanoidRootPart
+
+		-- Calcular posição à frente do jogador
+		local forward = rootPart.CFrame.LookVector
+		local position = rootPart.Position + forward * 5
+
+		-- Criar preview model local simples
+		previewModel = createPreviewModel(structure, CFrame.new(position))
+		if previewModel then
+			previewModel.Parent = workspace
+		end
+	end
+
+	-- Conectar movimento do mouse para mover preview
+	local mouse = player:GetMouse()
+
+	local function updatePreview()
+		if previewModel and selectedStructure then
+			local character = player.Character
+			if character and character:FindFirstChild("HumanoidRootPart") then
+				local rootPart = character.HumanoidRootPart
+				local forward = rootPart.CFrame.LookVector
+				local position = rootPart.Position + forward * 5
+
+			-- Aplicar snap no grid local
+			local snapped = snapToGrid(position, 4)
+			previewModel:PivotTo(CFrame.new(snapped))
+			end
+		end
+	end
+
+	-- Conectar eventos
+	local moveConnection = mouse.Move:Connect(updatePreview)
+	local clickConnection = mouse.Button1Down:Connect(function()
+		-- Construir estrutura
+		if previewModel and selectedStructure then
+			local position = previewModel:GetPivot().Position
+			local success, message = BuildStructureRemote:InvokeServer(selectedStructure.id, position)
+
+			if success then
+				print("✅ Built " .. selectedStructure.name)
+			else
+				print("❌ Failed to build " .. selectedStructure.name .. " (" .. tostring(message) .. ")")
+			end
+		end
+
+		-- Limpar
+		if previewModel then
+			previewModel:Destroy()
+			previewModel = nil
+		end
+
+		selectedStructure = nil
+		moveConnection:Disconnect()
+		clickConnection:Disconnect()
+	end)
+
+	-- Cancelar com botão direito
+	local rightClickConnection = mouse.Button2Down:Connect(function()
+		if previewModel then
+			previewModel:Destroy()
+			previewModel = nil
+		end
+
+		selectedStructure = nil
+		moveConnection:Disconnect()
+		clickConnection:Disconnect()
+		rightClickConnection:Disconnect()
+	end)
+end
+
+-- Conectar botões das categorias
+for _, category in ipairs(categories) do
+	local button = categoryButtons[category.name]
+	if button then
+		button.MouseButton1Click:Connect(function()
+			showCategoryItems(category.name, category.key)
+		end)
+	end
+end
+
+-- Fechar menu ao clicar no centro
+centerButton.MouseButton1Click:Connect(function()
+	toggleRadialMenu()
+end)
+
+-- Fechar menu ao clicar no background
+background.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		toggleRadialMenu()
+	end
+end)
+
+-- Registrar tecla para abrir menu (B)
+ContextActionService:BindAction("ToggleConstructionMenu", function(actionName, inputState, inputObject)
+	if inputState == Enum.UserInputState.Begin then
+		toggleRadialMenu()
+	end
+	return Enum.ContextActionResult.Sink
+end, false, Enum.KeyCode.B)
+
+ContextActionService:SetTitle("ToggleConstructionMenu", "Abrir Menu de Construção")
+ContextActionService:SetPosition("ToggleConstructionMenu", UDim2.new(0, 0, 0, 0))
+
+print("🏗️ Construction client loaded! Press B to open construction menu")</string>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="30">
+          <Properties>
+            <string name="Name">InventoryClient</string>
+            <string name="Source"><![CDATA[-- InventoryClient.client.luau
+-- GUI de inventário no cliente
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+
+local ItemDefinitions = require(ReplicatedStorage.Shared.ItemDefinitions)
+local CraftRecipes = require(ReplicatedStorage.Shared.CraftRecipes)
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Carregar remotes da pasta shared
+local CraftRemote = require(ReplicatedStorage.Shared.Remotes.CraftItem)
+local GetInventoryRemote = require(ReplicatedStorage.Shared.Remotes.GetInventory)
+local AddItemRemote = require(ReplicatedStorage.Shared.Remotes.AddItem)
+
+-- UI Setup - Aguardar GUI do servidor
+local screenGui = playerGui:WaitForChild("InventoryGui", 10)
+if not screenGui then
+	warn("❌ GUI do inventário não encontrada no PlayerGui")
+	return
+end
+
+local inventoryWindow = screenGui:WaitForChild("InventoryWindow")
+
+-- Referenciar elementos da GUI
+local titleLabel = inventoryWindow:WaitForChild("Title")
+local inventoryGrid = inventoryWindow:WaitForChild("InventoryGrid")
+local craftingArea = inventoryWindow:WaitForChild("CraftingArea")
+local craftingGrid = craftingArea:WaitForChild("CraftingGrid")
+local resultSlot = craftingArea:WaitForChild("ResultSlot")
+local craftButton = craftingArea:WaitForChild("CraftButton")
+
+print("✅ GUI do inventário carregada com sucesso")
+
+-- Estado do crafting grid (3x3)
+local craftingSlots = {} -- {row_col: itemId}
+
+-- Função para atualizar inventário em grid
+local function updateInventoryGrid()
+	local inv = GetInventoryRemote:InvokeServer()
+
+	-- Limpar grid anterior
+	for _, slot in pairs(inventoryGrid:GetChildren()) do
+		if slot:IsA("Frame") and slot.Name:match("^Slot%d+$") then
+			local itemImage = slot:FindFirstChild("ItemImage")
+			local quantityLabel = slot:FindFirstChild("Quantity")
+			if itemImage then itemImage.Visible = false end
+			if quantityLabel then quantityLabel.Text = "" end
+		end
+	end
+
+	-- Preencher grid com itens
+	for slotNum = 1, inv.maxSlots do
+		local slot = inventoryGrid:FindFirstChild("Slot" .. slotNum)
+		if slot then
+			local slotData = inv.slots[slotNum]
+			local itemImage = slot:FindFirstChild("ItemImage")
+			local quantityLabel = slot:FindFirstChild("Quantity")
+
+			if slotData and itemImage and quantityLabel then
+				local itemDef = ItemDefinitions[slotData.item]
+				if itemDef then
+					-- TODO: Adicionar sistema de imagens de itens
+					itemImage.Visible = true
+					itemImage.Image = "rbxassetid://0" -- Placeholder
+					itemImage.BackgroundColor3 = itemDef.rarity == "common" and Color3.fromRGB(150, 150, 150) or
+					                            itemDef.rarity == "uncommon" and Color3.fromRGB(100, 200, 100) or
+					                            itemDef.rarity == "rare" and Color3.fromRGB(100, 150, 255) or
+					                            itemDef.rarity == "epic" and Color3.fromRGB(200, 100, 255) or
+					                            Color3.fromRGB(255, 200, 100) -- legendary
+
+					if slotData.quantity > 1 then
+						quantityLabel.Text = tostring(slotData.quantity)
+					else
+						quantityLabel.Text = ""
+					end
+				end
+			end
+		end
+	end
+
+	-- Atualizar título com informações do inventário
+	local weightText = string.format("%.1f/%.1f kg", inv.totalWeight, inv.maxWeight)
+	local slotText = string.format("Level %d (%dx%d)", inv.backpackLevel, inv.columns, inv.rows)
+	titleLabel.Text = string.format("📦 INVENTORY | %s | %s", weightText, slotText)
+end
+
+-- Função para atualizar crafting grid
+local function updateCraftingGrid()
+	-- Limpar slots de crafting
+	for _, slot in pairs(craftingGrid:GetChildren()) do
+		if slot:IsA("Frame") and slot.Name:match("^CraftSlot_%d+_%d+$") then
+			local itemImage = slot:FindFirstChild("ItemImage")
+			if itemImage then itemImage.Visible = false end
+		end
+	end
+
+	-- Preencher slots de crafting
+	for row = 1, 3 do
+		for col = 1, 3 do
+			local slotKey = row .. "_" .. col
+			local itemId = craftingSlots[slotKey]
+			local slot = craftingGrid:FindFirstChild("CraftSlot_" .. slotKey)
+
+			if slot and itemId then
+				local itemImage = slot:FindFirstChild("ItemImage")
+				if itemImage then
+					local itemDef = ItemDefinitions[itemId]
+					if itemDef then
+						itemImage.Visible = true
+						itemImage.Image = "rbxassetid://0" -- Placeholder
+						itemImage.BackgroundColor3 = itemDef.rarity == "common" and Color3.fromRGB(150, 150, 150) or
+						                            itemDef.rarity == "uncommon" and Color3.fromRGB(100, 200, 100) or
+						                            itemDef.rarity == "rare" and Color3.fromRGB(100, 150, 255) or
+						                            itemDef.rarity == "epic" and Color3.fromRGB(200, 100, 255) or
+						                            Color3.fromRGB(255, 200, 100) -- legendary
+					end
+				end
+			end
+		end
+	end
+
+	-- Verificar se há receita válida
+	local resultItem = checkCraftingRecipe()
+	updateCraftingResult(resultItem)
+end
+
+-- Função para verificar receita de crafting
+local function checkCraftingRecipe()
+	local inv = GetInventoryRemote:InvokeServer()
+
+	-- Criar padrão atual do crafting grid
+	local currentPattern = {}
+	for row = 1, 3 do
+		currentPattern[row] = {}
+		for col = 1, 3 do
+			local slotKey = row .. "_" .. col
+			currentPattern[row][col] = craftingSlots[slotKey] or nil
+		end
+	end
+
+	-- Verificar cada receita
+	for recipeId, recipe in pairs(CraftRecipes) do
+		if recipe.pattern then
+			local matches = true
+
+			-- Verificar se o padrão corresponde
+			for row = 1, 3 do
+				for col = 1, 3 do
+					local patternItem = recipe.pattern[row] and recipe.pattern[row][col] or nil
+					local gridItem = currentPattern[row][col]
+
+					if patternItem ~= gridItem then
+						matches = false
+						break
+					end
+				end
+				if not matches then break end
+			end
+
+			if matches then
+				-- Verificar se tem itens suficientes no inventário
+				if Inventory.hasItems(inv, ItemDefinitions, recipe) then
+					return recipe
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+-- Função para atualizar resultado do crafting
+local function updateCraftingResult(recipe)
+	local resultImage = resultSlot:FindFirstChild("ResultImage")
+	local resultQuantity = resultSlot:FindFirstChild("ResultQuantity")
+
+	if resultImage and resultQuantity then
+		if recipe then
+			local itemDef = ItemDefinitions[recipe.output.item]
+			if itemDef then
+				resultImage.Visible = true
+				resultImage.Image = "rbxassetid://0" -- Placeholder
+				resultImage.BackgroundColor3 = itemDef.rarity == "common" and Color3.fromRGB(150, 150, 150) or
+				                              itemDef.rarity == "uncommon" and Color3.fromRGB(100, 200, 100) or
+				                              itemDef.rarity == "rare" and Color3.fromRGB(100, 150, 255) or
+				                              itemDef.rarity == "epic" and Color3.fromRGB(200, 100, 255) or
+				                              Color3.fromRGB(255, 200, 100) -- legendary
+
+				if recipe.output.quantity > 1 then
+					resultQuantity.Text = tostring(recipe.output.quantity)
+				else
+					resultQuantity.Text = ""
+				end
+
+				craftButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+				craftButton.Text = "CRAFT"
+				craftButton.Active = true
+			end
+		else
+			resultImage.Visible = false
+			resultQuantity.Text = ""
+			craftButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+			craftButton.Text = "NO RECIPE"
+			craftButton.Active = false
+		end
+	end
+end
+
+-- Função para atualizar tudo
+local function updateInventory()
+	updateInventoryGrid()
+	updateCraftingGrid()
+end
+
+-- Event handlers para crafting
+craftButton.MouseButton1Click:Connect(function()
+	local recipe = checkCraftingRecipe()
+	if recipe then
+		local result = CraftRemote:InvokeServer(recipe.id)
+		if result.success then
+			print("✅ " .. result.message)
+			-- Limpar crafting grid após craft bem-sucedido
+			craftingSlots = {}
+			wait(0.5)
+			updateInventory()
+		else
+			print("❌ " .. result.message)
+		end
+	end
+end)
+
+-- Sistema de drag and drop simplificado (click to place)
+-- Por enquanto, vamos implementar um sistema básico onde clicar em um item do inventário
+-- o coloca no primeiro slot vazio do crafting grid
+
+local selectedItem = nil
+
+-- Handler para slots do inventário
+for _, slot in pairs(inventoryGrid:GetChildren()) do
+	if slot:IsA("Frame") and slot.Name:match("^Slot%d+$") then
+		slot.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local slotNum = tonumber(slot.Name:match("%d+"))
+				local inv = GetInventoryRemote:InvokeServer()
+				local slotData = inv.slots[slotNum]
+
+				if slotData then
+					selectedItem = slotData.item
+					print("📦 Selecionado: " .. selectedItem)
+				end
+			end
+		end)
+	end
+end
+
+-- Handler para slots de crafting
+for _, slot in pairs(craftingGrid:GetChildren()) do
+	if slot:IsA("Frame") and slot.Name:match("^CraftSlot_%d+_%d+$") then
+		slot.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local row, col = slot.Name:match("CraftSlot_(%d+)_(%d+)")
+				row, col = tonumber(row), tonumber(col)
+				local slotKey = row .. "_" .. col
+
+				if selectedItem then
+					-- Colocar item no slot
+					craftingSlots[slotKey] = selectedItem
+					selectedItem = nil
+					updateCraftingGrid()
+					print("🔨 Item colocado no crafting grid")
+				else
+					-- Remover item do slot
+					craftingSlots[slotKey] = nil
+					updateCraftingGrid()
+					print("🔨 Item removido do crafting grid")
+				end
+			end
+		end)
+	end
+end
+
+-- Função para alternar inventário
+local function toggleInventory(actionName, inputState, inputObject)
+	if inputState == Enum.UserInputState.Begin then
+		inventoryWindow.Visible = not inventoryWindow.Visible
+		if inventoryWindow.Visible then
+			updateInventory()
+		end
+	end
+	return Enum.ContextActionResult.Sink -- Bloqueia outras ações
+end
+
+-- Registrar ação com prioridade alta
+ContextActionService:BindAction("ToggleInventory", toggleInventory, false, Enum.KeyCode.I)
+ContextActionService:SetTitle("ToggleInventory", "Abrir/Fechar Inventário")
+ContextActionService:SetPosition("ToggleInventory", UDim2.new(0, 0, 0, 0))
+
+-- Inicializar
+inventoryWindow.Visible = false
+updateInventory()
+
+print("✅ Inventory Client carregado! Pressione I para abrir")
+
+-- Sistema de coleta de itens
+local function setupItemCollection()
+	-- Conectar aos itens spawnados
+	workspace.SpawnedItems.ChildAdded:Connect(function(itemPart)
+		if itemPart:IsA("Part") then
+			local clickDetector = itemPart:FindFirstChild("ClickDetector")
+			if clickDetector then
+				clickDetector.MouseClick:Connect(function()
+					local ItemSpawner = require(game.ServerScriptService.Server.ItemSpawner)
+					local success = ItemSpawner.collectItem(player, itemPart)
+
+					if success then
+						print("✅ Collected item")
+					else
+						print("❌ Failed to collect item")
+					end
+				end)
+			end
+		end
+	end)
+
+	-- Conectar aos itens já existentes
+	for _, itemPart in pairs(workspace.SpawnedItems:GetChildren()) do
+		if itemPart:IsA("Part") then
+			local clickDetector = itemPart:FindFirstChild("ClickDetector")
+			if clickDetector then
+				clickDetector.MouseClick:Connect(function()
+					local ItemSpawner = require(game.ServerScriptService.Server.ItemSpawner)
+					local success = ItemSpawner.collectItem(player, itemPart)
+
+					if success then
+						print("✅ Collected item")
+					else
+						print("❌ Failed to collect item")
+					end
+				end)
+			end
+		end
+	end
+end
+
+setupItemCollection()
+local function updateInventory()
+	-- Limpar itens antigos
+	for _, child in pairs(itemScroll:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+
+	local inv = GetInventoryRemote:InvokeServer()
+
+	-- Mostrar itens
+	for slotNum = 1, inv.maxSlots do
+		local slot = inv.slots[slotNum]
+		if slot then
+			local itemDef = ItemDefinitions[slot.item]
+			
+			local itemFrame = Instance.new("Frame")
+			itemFrame.Name = slot.item .. "_" .. slotNum
+			itemFrame.Size = UDim2.new(1, 0, 0, 40)
+			itemFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+			itemFrame.BorderSizePixel = 0
+			itemFrame.Parent = itemScroll
+
+			local textLabel = Instance.new("TextLabel")
+			textLabel.Size = UDim2.new(0.7, 0, 1, 0)
+			textLabel.BackgroundTransparency = 1
+			textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			textLabel.TextSize = 12
+			textLabel.Font = Enum.Font.Gotham
+			textLabel.TextXAlignment = Enum.TextXAlignment.Left
+			textLabel.Text = itemDef.name .. " x" .. slot.quantity
+			textLabel.Parent = itemFrame
+		end
+	end
+
+	-- Atualizar receitas
+	for _, child in pairs(recipeScroll:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+
+	for recipeId, recipe in pairs(CraftRecipes) do
+		local canCraft = true
+		local inputText = ""
+
+		-- Verificar se pode craftar
+		for itemId, needed in pairs(recipe.inputs) do
+			local have = 0
+			for slotNum = 1, inv.maxSlots do
+				if inv.slots[slotNum] and inv.slots[slotNum].item == itemId then
+					have += inv.slots[slotNum].quantity
+				end
+			end
+			
+			local rarity = have >= needed and "✓" or "✗"
+			inputText = inputText .. itemId .. "(" .. have .. "/" .. needed .. ") "
+			
+			if have < needed then
+				canCraft = false
+			end
+		end
+
+		local recipeFrame = Instance.new("Frame")
+		recipeFrame.Name = recipeId
+		recipeFrame.Size = UDim2.new(1, 0, 0, 50)
+		recipeFrame.BackgroundColor3 = canCraft and Color3.fromRGB(60, 80, 60) or Color3.fromRGB(80, 40, 40)
+		recipeFrame.BorderSizePixel = 0
+		recipeFrame.Parent = recipeScroll
+
+		local recipeText = Instance.new("TextLabel")
+		recipeText.Size = UDim2.new(0.65, 0, 1, 0)
+		recipeText.BackgroundTransparency = 1
+		recipeText.TextColor3 = Color3.fromRGB(255, 255, 255)
+		recipeText.TextSize = 10
+		recipeText.Font = Enum.Font.Gotham
+		recipeText.TextXAlignment = Enum.TextXAlignment.Left
+		recipeText.TextWrapped = true
+		recipeText.Text = recipe.name .. "\n" .. inputText
+		recipeText.Parent = recipeFrame
+
+		local craftButton = Instance.new("TextButton")
+		craftButton.Name = "CraftBtn"
+		craftButton.Size = UDim2.new(0.3, -5, 1, 0)
+		craftButton.Position = UDim2.new(0.65, 5, 0, 0)
+		craftButton.BackgroundColor3 = canCraft and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(100, 100, 100)
+		craftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+		craftButton.TextSize = 11
+		craftButton.Font = Enum.Font.GothamBold
+		craftButton.Text = "CRAFT"
+		craftButton.Active = canCraft
+		craftButton.Parent = recipeFrame
+
+		craftButton.MouseButton1Click:Connect(function()
+			local result = CraftRemote:InvokeServer(recipeId)
+			if result.success then
+				print("✅ " .. result.message)
+				wait(0.5)
+				updateInventory()
+			else
+				print("❌ " .. result.message)
+			end
+		end)
+	end
+end
+
+-- Função para alternar inventário
+local function toggleInventory(actionName, inputState, inputObject)
+	if inputState == Enum.UserInputState.Begin then
+		inventoryWindow.Visible = not inventoryWindow.Visible
+		if inventoryWindow.Visible then
+			updateInventory()
+		end
+	end
+	return Enum.ContextActionResult.Sink -- Bloqueia outras ações
+end
+
+-- Registrar ação com prioridade alta
+ContextActionService:BindAction("ToggleInventory", toggleInventory, false, Enum.KeyCode.I)
+ContextActionService:SetTitle("ToggleInventory", "Abrir/Fechar Inventário")
+ContextActionService:SetPosition("ToggleInventory", UDim2.new(0, 0, 0, 0))
+
+-- Inicializar
+inventoryWindow.Visible = false
+updateInventory()
+
+print("✅ Inventory Client carregado! Pressione I para abrir")
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="31">
+          <Properties>
+            <string name="Name">ItemInteractionClient</string>
+            <string name="Source"><![CDATA[-- ItemInteractionClient.client.luau
+-- Sistema de interacao com itens no chao (coletar, arrastar)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Estado do sistema
+local hoveredItem = nil
+local draggingItem = nil
+local dragStartPosition = nil
+local dragOffset = Vector3.new(0, 1, 0) -- Offset acima do chao
+local isMouseDown = false
+
+-- Configuracao
+local RAYCAST_DISTANCE = 100
+local MAX_DRAG_DISTANCE = 30 -- Maximo de distancia para arrastar
+local HOVER_DISTANCE = 8
+
+-- Criar GUI para prompt de interacao
+local PlayerGui = player:WaitForChild("PlayerGui")
+local interactionGui = Instance.new("ScreenGui")
+interactionGui.Name = "ItemInteractionGui"
+interactionGui.ResetOnSpawn = false
+interactionGui.Parent = PlayerGui
+
+local promptLabel = Instance.new("TextLabel")
+promptLabel.Name = "PromptLabel"
+promptLabel.Size = UDim2.new(0, 200, 0, 50)
+promptLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+promptLabel.BackgroundTransparency = 0.5
+promptLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+promptLabel.TextSize = 14
+promptLabel.Font = Enum.Font.Gotham
+promptLabel.Visible = false
+promptLabel.ZIndex = 100
+promptLabel.Parent = interactionGui
+
+local promptCorner = Instance.new("UICorner")
+promptCorner.CornerRadius = UDim.new(0, 4)
+promptCorner.Parent = promptLabel
+
+-- Criacao de parte visual para preview do arrasto
+local dragPreview = nil
+
+-- Funcao para atualizar hover
+local function updateHover()
+	local camera = workspace.CurrentCamera
+	local rayOrigin = camera.CFrame.Position
+	local rayDirection = (mouse.Hit.Position - rayOrigin).Unit * RAYCAST_DISTANCE
+
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterType = Enum.RaycastFilterType.Whitelist
+	
+	-- Encontrar todos os itens spawnados
+	local spawnedItemsFolder = workspace:FindFirstChild("SpawnedItems")
+	if spawnedItemsFolder then
+		raycastParams.FilterDescendantsInstances = {spawnedItemsFolder}
+	end
+
+	local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+	-- Limpar hover anterior
+	if hoveredItem and hoveredItem ~= (raycastResult and raycastResult.Instance) then
+		hoveredItem = nil
+		promptLabel.Visible = false
+	end
+
+	-- Novo hover
+	if raycastResult and raycastResult.Instance:FindFirstChild("ItemId") then
+		hoveredItem = raycastResult.Instance
+		local itemId = hoveredItem:FindFirstChild("ItemId")
+		local amount = hoveredItem:FindFirstChild("Amount")
+
+		if itemId and amount then
+			-- Atualizar posicao do prompt
+			promptLabel.Position = UDim2.new(0, mouse.X + 10, 0, mouse.Y - 30)
+			promptLabel.Text = "[DRAG] " .. itemId.Value .. " x" .. amount.Value
+			promptLabel.Visible = true
+		end
+	end
+end
+
+-- Funcao para iniciar arrasto
+local function startDrag()
+	if not hoveredItem then return end
+
+	draggingItem = hoveredItem
+	dragStartPosition = draggingItem.Position
+	isMouseDown = true
+
+	print("Iniciado arrasto do item: " .. draggingItem.Name)
+
+	-- Desabilitar fisica durante arrasto
+	if draggingItem:FindFirstChild("BodyVelocity") then
+		draggingItem:FindFirstChild("BodyVelocity"):Destroy()
+	end
+
+	-- Criar preview visual
+	if not dragPreview then
+		dragPreview = Instance.new("Part")
+		dragPreview.Name = "DragPreview"
+		dragPreview.Size = draggingItem.Size
+		dragPreview.Color = Color3.fromRGB(100, 200, 100)
+		dragPreview.Material = Enum.Material.Neon
+		dragPreview.CanCollide = false
+		dragPreview.Anchored = true
+		dragPreview.Transparency = 0.3
+		dragPreview.CFrame = draggingItem.CFrame
+		dragPreview.Parent = workspace
+	end
+end
+
+-- Funcao de atualizacao durante arrasto
+local function updateDrag()
+	if not draggingItem or not isMouseDown then return end
+
+	local camera = workspace.CurrentCamera
+	local rayOrigin = camera.CFrame.Position
+	local rayDirection = (mouse.Hit.Position - rayOrigin).Unit * RAYCAST_DISTANCE
+
+	-- Fazer raycast no chao para encontrar altura
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = {draggingItem}
+	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+	local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+	local targetPosition = rayOrigin + rayDirection
+
+	if raycastResult then
+		targetPosition = raycastResult.Position + dragOffset
+	else
+		-- Se nao acertar, usar mouse.Hit
+		targetPosition = mouse.Hit.Position + dragOffset
+	end
+
+	-- Verificacao de distancia maxima
+	local distance = (targetPosition - dragStartPosition).Magnitude
+	if distance > MAX_DRAG_DISTANCE then
+		local direction = (targetPosition - dragStartPosition).Unit
+		targetPosition = dragStartPosition + direction * MAX_DRAG_DISTANCE
+	end
+
+	-- Atualizar preview
+	if dragPreview then
+		dragPreview.CFrame = CFrame.new(targetPosition)
+	end
+
+	-- Atualizar item (visualmente no cliente)
+	draggingItem.CFrame = CFrame.new(targetPosition)
+end
+
+-- Funcao para finalizar arrasto
+local function endDrag()
+	if not draggingItem then return end
+
+	isMouseDown = false
+	local finalPosition = draggingItem.Position
+
+	print("Arrasto finalizado. Item em: " .. tostring(finalPosition))
+
+	-- Enviar para servidor para validacao e coleta
+	if draggingItem:FindFirstChild("ItemId") then
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RemotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+		local CollectItemRemote = RemotesFolder and RemotesFolder:FindFirstChild("CollectItem")
+		local ItemCollectedEvent = RemotesFolder and RemotesFolder:FindFirstChild("ItemCollected")
+		
+		if CollectItemRemote then
+			-- Invocar remota para coletar
+			local itemName = draggingItem.Name
+			local success = pcall(function()
+				local result = CollectItemRemote:InvokeServer(itemName)
+			end)
+		end
+	end
+
+	-- Limpar preview
+	if dragPreview then
+		dragPreview:Destroy()
+		dragPreview = nil
+	end
+
+	draggingItem = nil
+	promptLabel.Visible = false
+end
+
+-- Conectar eventos de mouse
+mouse.Button1Down:Connect(function()
+	startDrag()
+end)
+
+mouse.Button1Up:Connect(function()
+	endDrag()
+end)
+
+-- Loop de atualizacao
+RunService.RenderStepped:Connect(function()
+	updateHover()
+	if isMouseDown then
+		updateDrag()
+	end
+end)
+
+-- Conectar ao evento ItemCollected do servidor
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RemotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+if RemotesFolder then
+	local ItemCollectedEvent = RemotesFolder:FindFirstChild("ItemCollected")
+	if ItemCollectedEvent then
+		ItemCollectedEvent.OnClientEvent:Connect(function(itemId, amount)
+			-- Chamar AddItem remote para adicionar ao inventario
+			local AddItemRemote = RemotesFolder:FindFirstChild("AddItem")
+			if AddItemRemote then
+				AddItemRemote:InvokeServer(itemId, amount)
+				print("Item " .. itemId .. " adicionado ao inventario!")
+			end
+		end)
+	end
+end
+
+print("Item Interaction Client loaded! Hover near items and drag to collect")
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="32">
+          <Properties>
+            <string name="Name">PlayerHUD</string>
+            <string name="Source">-- PlayerHUD.client.luau
+-- HUD básico de sobrevivência: vida, fome, sede, stamina, sanidade, nível
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local hud = Instance.new("ScreenGui")
+hud.Name = "SurvivalHUD"
+hud.ResetOnSpawn = false
+hud.Parent = playerGui
+
+local function createStatBar(name, color, position)
+	local frame = Instance.new("Frame")
+	frame.Name = name .. "Bar"
+	frame.Size = UDim2.new(0, 220, 0, 26)
+	frame.Position = position
+	frame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+	frame.BorderSizePixel = 1
+	frame.Parent = hud
+
+	local label = Instance.new("TextLabel")
+	label.Name = name .. "Label"
+	label.Size = UDim2.new(0, 80, 1, 0)
+	label.Position = UDim2.new(0, 4, 0, 0)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.TextSize = 14
+	label.Font = Enum.Font.GothamBold
+	label.Text = name
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = frame
+
+	local fill = Instance.new("Frame")
+	fill.Name = name .. "Fill"
+	fill.Size = UDim2.new(1, -86, 1, -6)
+	fill.Position = UDim2.new(0, 82, 0, 3)
+	fill.BackgroundColor3 = color
+	fill.BorderSizePixel = 0
+	fill.Parent = frame
+
+	local value = Instance.new("TextLabel")
+	value.Name = name .. "Value"
+	value.Size = UDim2.new(1, 0, 1, 0)
+	value.Position = UDim2.new(0, 0, 0, 0)
+	value.BackgroundTransparency = 1
+	value.TextColor3 = Color3.fromRGB(255, 255, 255)
+	value.TextSize = 14
+	value.Font = Enum.Font.Gotham
+	value.Text = "0/100"
+	value.Parent = fill
+
+	return {
+		frame = frame,
+		fill = fill,
+		value = value,
+	}
+end
+
+local bars = {
+	Health = createStatBar("Health", Color3.fromRGB(210, 40, 40), UDim2.new(0, 20, 0, 20)),
+	Hunger = createStatBar("Hunger", Color3.fromRGB(220, 150, 30), UDim2.new(0, 20, 0, 52)),
+	Thirst = createStatBar("Thirst", Color3.fromRGB(60, 170, 230), UDim2.new(0, 20, 0, 84)),
+	Stamina = createStatBar("Stamina", Color3.fromRGB(80, 220, 80), UDim2.new(0, 20, 0, 116)),
+	Sanity = createStatBar("Sanity", Color3.fromRGB(170, 60, 210), UDim2.new(0, 20, 0, 148)),
+}
+
+local levelLabel = Instance.new("TextLabel")
+levelLabel.Name = "LevelLabel"
+levelLabel.Size = UDim2.new(0, 220, 0, 26)
+levelLabel.Position = UDim2.new(0, 20, 0, 190)
+levelLabel.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+levelLabel.BorderSizePixel = 1
+levelLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+levelLabel.TextSize = 14
+levelLabel.Font = Enum.Font.GothamBold
+levelLabel.Text = "Level: 1  XP: 0"
+levelLabel.TextXAlignment = Enum.TextXAlignment.Left
+levelLabel.Parent = hud
+
+local function getStatsFolder()
+	local stats = player:FindFirstChild("Stats")
+	local timeout = 30
+	local elapsed = 0
+	while not stats and elapsed &lt; timeout do
+		stats = player:FindFirstChild("Stats")
+		task.wait(0.1)
+		elapsed += 0.1
+	end
+
+	if not stats then
+		warn("PlayerHUD: Stats folder não encontrado dentro do timeout, criando fallback")
+		stats = Instance.new("Folder")
+		stats.Name = "Stats"
+		stats.Parent = player
+		local defaults = {Health = 100, Hunger = 100, Thirst = 100, Stamina = 100, Sanity = 100, Level = 1, XP = 0}
+		for k, v in pairs(defaults) do
+			local value = Instance.new("IntValue")
+			value.Name = k
+			value.Value = v
+			value.Parent = stats
+		end
+	end
+
+	return stats
+end
+
+local statsFolder = getStatsFolder()
+
+local function updateBar(statName)
+	local stat = statsFolder:FindFirstChild(statName)
+	if not stat then return end
+	local current = stat.Value
+	local percent = math.clamp(current / 100, 0, 1)
+	local bar = bars[statName]
+	if bar then
+		bar.fill.Size = UDim2.new(percent, -86, 1, -6)
+		bar.value.Text = string.format("%d/100", current)
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	if not statsFolder.Parent then return end
+	updateBar("Health")
+	updateBar("Hunger")
+	updateBar("Thirst")
+	updateBar("Stamina")
+	updateBar("Sanity")
+
+	local level = statsFolder:FindFirstChild("Level")
+	local xp = statsFolder:FindFirstChild("XP")
+	if level and xp then
+		levelLabel.Text = string.format("Level: %d  XP: %d", level.Value, xp.Value)
+	end
+end)
+
+print("📊 Survival HUD loaded")</string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="Workspace" referent="33">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="FilteringEnabled">true</bool>
+      <bool name="NeedsPivotMigration">false</bool>
+    </Properties>
+    <Item class="Part" referent="34">
+      <Properties>
+        <string name="Name">Baseplate</string>
+        <bool name="Anchored">true</bool>
+        <Color3uint8 name="Color3uint8">6512483</Color3uint8>
+        <bool name="Locked">true</bool>
+        <Vector3 name="Position">
+          <X>0</X>
+          <Y>-10</Y>
+          <Z>0</Z>
+        </Vector3>
+        <Vector3 name="size">
+          <X>512</X>
+          <Y>20</Y>
+          <Z>512</Z>
+        </Vector3>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
