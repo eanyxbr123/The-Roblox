@@ -47,7 +47,7 @@ local function findInServer(name)
 					if inst:IsA("ModuleScript") then
 						return inst
 					else
-						warn("[init] found Script named '"..c.."'; DayNightSystem/MonsterSystem/etc devem ser ModuleScript.")
+						warn("[init] found Script named '"..c.."'; deve ser ModuleScript para require() funcionar.")
 					end
 				end
 			end
@@ -77,7 +77,6 @@ local function findInServer(name)
 		end
 	end
 
-	-- Debug plus for troubleshooting
 	warn("[init] module not found: " .. tostring(name) .. ". listing all script/module names in Server folder and root...")
 	for _, root in ipairs({serverFolder, ServerScriptService}) do
 		if root then
@@ -102,43 +101,23 @@ local function getModule(name)
 	return require(inst)
 end
 
-local function getItemSpawner()
-	return getModule("ItemSpawner")
-end
-
-local function getTreeSpawner()
-	return getModule("TreeSpawner")
-end
-
-local function getDayNightSystem()
-	return getModule("DayNightSystem")
-end
-
-local function getMonsterSystem()
-	return getModule("MonsterSystem")
-end
-
-local function getConstructionSystem()
-	return getModule("ConstructionSystem")
-end
-
 -- Inicializar sistemas na ordem correta
-local dayNightSystem = getDayNightSystem()
+local dayNightSystem = getModule("DayNightSystem")
 if dayNightSystem then
 	dayNightSystem.init()
 end
 
-local monsterSystem = getMonsterSystem()
+local monsterSystem = getModule("MonsterSystem")
 if monsterSystem then
 	monsterSystem.init()
 end
 
-local itemSpawner = getItemSpawner()
+local itemSpawner = getModule("ItemSpawner")
 if itemSpawner then
 	itemSpawner.startAutoSpawn()
 end
 
-local treeSpawner = getTreeSpawner()
+local treeSpawner = getModule("TreeSpawner")
 if treeSpawner then
 	treeSpawner.startAutoSpawn()
 end
@@ -148,8 +127,18 @@ if playerStats then
 	playerStats.init()
 end
 
+-- ✅ CORREÇÃO: Carregar InventorySystem ANTES do ItemInteraction
+local inventorySystem = getModule("InventorySystem")
+
+-- ✅ CORREÇÃO: Injetar InventorySystem no ItemInteraction via init()
+--    Isso evita require() de Script (.server.luau) dentro de outro módulo
 local itemInteraction = getModule("ItemInteraction")
 if itemInteraction then
+	if inventorySystem then
+		itemInteraction.init(inventorySystem)
+	else
+		warn("⚠️ InventorySystem não encontrado — coleta de itens não vai persistir no inventário")
+	end
 	print("✅ Item Interaction system loaded")
 end
 
@@ -159,7 +148,7 @@ local BuildStructureRemote = require(ReplicatedStorage.Shared.Remotes.BuildStruc
 local GetAvailableStructuresRemote = require(ReplicatedStorage.Shared.Remotes.GetAvailableStructures)
 
 BuildStructureRemote.OnServerInvoke = function(player, structureId, position)
-	local constructionSystem = getConstructionSystem()
+	local constructionSystem = getModule("ConstructionSystem")
 	if not constructionSystem then
 		return false, "Construction system unavailable"
 	end
@@ -167,7 +156,7 @@ BuildStructureRemote.OnServerInvoke = function(player, structureId, position)
 end
 
 GetAvailableStructuresRemote.OnServerInvoke = function(player)
-	local constructionSystem = getConstructionSystem()
+	local constructionSystem = getModule("ConstructionSystem")
 	if not constructionSystem then
 		return {}
 	end
